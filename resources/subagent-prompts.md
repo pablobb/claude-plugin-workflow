@@ -13,6 +13,51 @@ Select the appropriate agent tier based on the execution mode.
 
 ---
 
+## Codebase Analysis Agent
+
+### codebase-analyzer (sonnet)
+
+Runs **before planning** to extract conventions and best practices.
+
+```
+subagent_type: codebase-analyzer
+model: sonnet
+prompt: |
+  ## Task
+  Analyze the codebase to extract conventions and best practices.
+
+  ## Project Root
+  {project_root}
+
+  ## Analysis Scope
+  1. Stack Detection - Languages, frameworks, tools
+  2. Project Structure - Directory layout, entry points
+  3. Naming Conventions - Files, classes, methods, variables, DB
+  4. Architectural Patterns - Design patterns, layer separation
+  5. Code Style - Indentation, quotes, formatting
+  6. Error Handling - Exceptions, logging, validation
+  7. Testing Patterns - Framework, naming, organization
+  8. Documentation Style - Docblocks, comments
+
+  ## Output
+  Save context document to: ~/.claude/workflows/context/{project-slug}.md
+
+  This context will be injected into all subsequent agent prompts
+  to ensure consistency with established patterns.
+```
+
+**Context file is then injected into all other agents:**
+
+```
+## Codebase Context
+{contents of ~/.claude/workflows/context/<project>.md}
+
+## Task
+{actual task instructions}
+```
+
+---
+
 ## Planning Agents
 
 ### architect-lite (haiku)

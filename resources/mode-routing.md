@@ -13,6 +13,17 @@ This document explains how agents are selected based on execution mode.
 
 ## Agent Routing Matrix
 
+### Codebase Analysis Phase (Step 0)
+
+| Mode | Agent | Model | Behavior |
+|------|-------|-------|----------|
+| standard | codebase-analyzer | sonnet | Generate if missing or stale (>7 days) |
+| turbo | codebase-analyzer | sonnet | Use cache if available, else generate |
+| eco | SKIP | - | Use existing context only, never generate |
+| thorough | codebase-analyzer | sonnet | Always regenerate fresh |
+
+Context file: `~/.claude/workflows/context/<project-slug>.md`
+
 ### Planning Phase
 
 | Mode | Agent | Model | Depth |
@@ -80,23 +91,27 @@ This document explains how agents are selected based on execution mode.
 
 ### Standard Mode
 ```
-Implementation → Code Review (max 2) → Security Review (max 1) → Complete
+Codebase Analysis → Planning → Implementation → Code Review (max 2) → Security Review (max 1) → Complete
 ```
 
 ### Turbo Mode
 ```
-Implementation → [Advisory: Quick Review + Quick Security] → Complete
+Codebase Analysis (cached) → Planning → Implementation → [Advisory: Quick Review + Quick Security] → Complete
 ```
 (Reviews run in parallel, non-blocking)
 
 ### Eco Mode
 ```
-Implementation → Quick Code Review (max 1) → Complete
+[Use existing context] → Planning → Implementation → Quick Code Review (max 1) → Complete
 ```
-(Security review skipped)
+(Codebase analysis and security review skipped)
 
 ### Thorough Mode
 ```
+Codebase Analysis (fresh)
+     ↓
+Planning (architect/opus)
+     ↓
 Implementation
      ↓
 Code Review (max 3) ──────────────────┐

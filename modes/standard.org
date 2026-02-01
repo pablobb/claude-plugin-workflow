@@ -11,6 +11,7 @@ Uses sonnet model for most tasks with single-pass code review.
 
 | Phase | Agent | Model | Purpose |
 |-------|-------|-------|---------|
+| Codebase Analysis | codebase-analyzer | sonnet | Extract conventions and patterns |
 | Planning | Plan | sonnet | Built-in planning agent |
 | Implementation | focused-build | sonnet | Built-in implementation agent |
 | Code Review | reviewer | sonnet | Standard code review |

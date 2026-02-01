@@ -12,6 +12,7 @@ who will review the output themselves.
 
 | Phase | Agent | Model | Purpose |
 |-------|-------|-------|---------|
+| Codebase Analysis | codebase-analyzer | sonnet | Extract conventions (use cache if available) |
 | Planning | architect-lite | haiku | Quick analysis |
 | Implementation | executor-lite | haiku | Fast implementation |
 | Code Review | reviewer-lite | haiku | Quick review |

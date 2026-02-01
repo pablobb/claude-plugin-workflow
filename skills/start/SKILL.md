@@ -102,10 +102,17 @@ You are the **supervisor agent** for this workflow. You coordinate the entire pr
      - Create/update `~/.claude/workflows/state.json`
      - Use TodoWrite for step tracking
 
-5. **Confirm with user**:
+5. **Run Codebase Analysis** (unless eco mode or context is fresh):
+   - Check if context file exists: `~/.claude/workflows/context/<project-slug>.md`
+   - If missing or older than 7 days, run `codebase-analyzer` agent
+   - Store context file for all subsequent agents to reference
+   - In eco mode, skip analysis to save tokens (use existing context if available)
+
+6. **Confirm with user**:
    - Show workflow ID and state location
    - Show selected mode and its implications
-   - "Ready to begin Step 0: Planning?"
+   - Show context file status (fresh/generated/skipped)
+   - "Ready to begin Step 1: Planning?"
 
 ### Agent Routing by Mode
 
@@ -113,6 +120,7 @@ Use the correct agent based on the mode:
 
 | Phase | standard | turbo | eco | thorough |
 |-------|----------|-------|-----|----------|
+| **Codebase Analysis** | codebase-analyzer | codebase-analyzer | skip | codebase-analyzer |
 | Planning | Plan | architect-lite | architect-lite | architect |
 | Implementation | focused-build | executor-lite | executor-lite | executor |
 | Code Review | reviewer | reviewer-lite | reviewer-lite | reviewer-deep |
@@ -139,28 +147,55 @@ Task(
 | (standard) | sonnet |
 | `-deep` | opus |
 
+### Codebase Context Injection
+
+All agents receive the codebase context to ensure consistency:
+
+```
+Context file: ~/.claude/workflows/context/<project-slug>.md
+
+Include in every agent prompt:
+---
+## Codebase Context
+{contents of context file}
+---
+```
+
+This ensures:
+- Agents follow established naming conventions
+- Architectural patterns are maintained
+- Code style is consistent
+- Testing patterns match existing tests
+
 ### Step Execution Pattern
 
 For each step:
 
 ```
 1. READ the step from state file (may have been modified by user)
-2. UPDATE state: set STARTED_AT, STATUS: in-progress
-3. REPORT to user: "Starting Step X: <name> (using <agent>)"
-4. SPAWN subagent with mode-appropriate agent:
+2. LOAD codebase context from ~/.claude/workflows/context/<project>.md
+3. UPDATE state: set STARTED_AT, STATUS: in-progress
+4. REPORT to user: "Starting Step X: <name> (using <agent>)"
+5. SPAWN subagent with mode-appropriate agent:
    Task(
      subagent_type=<agent from routing table>,
      model=<model from mode>,
-     prompt=<detailed instructions with context>
+     prompt="""
+       ## Codebase Context
+       {context_file_contents}
+
+       ## Task
+       {detailed instructions}
+     """
    )
-5. CAPTURE output from subagent
-6. UPDATE state:
+6. CAPTURE output from subagent
+7. UPDATE state:
    - Write output to appropriate section
    - Check off completed objectives
    - Set COMPLETED_AT
    - Mark as DONE
-7. REPORT to user: "Step X complete. <brief summary>"
-8. CHECK for user input before proceeding
+8. REPORT to user: "Step X complete. <brief summary>"
+9. CHECK for user input before proceeding
 ```
 
 ### Review Loops by Mode

@@ -12,6 +12,7 @@ usage or simple, well-defined tasks.
 
 | Phase | Agent | Model | Purpose |
 |-------|-------|-------|---------|
+| Codebase Analysis | SKIP | - | Use existing context only (no generation) |
 | Planning | architect-lite | haiku | Minimal planning |
 | Implementation | executor-lite | haiku | Direct implementation |
 | Code Review | reviewer-lite | haiku | Basic review |

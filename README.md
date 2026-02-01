@@ -90,7 +90,10 @@ In Claude Code, run:
 
 ## Agents
 
-The plugin includes 15 tiered agents:
+The plugin includes 16 tiered agents:
+
+### Codebase Analysis
+- `codebase-analyzer` (sonnet) - Extracts conventions, patterns, best practices
 
 ### Planning
 - `architect-lite` (haiku) - Quick analysis
@@ -117,11 +120,29 @@ The plugin includes 15 tiered agents:
 - `perf-reviewer` (sonnet) - Performance analysis
 - `doc-writer` (haiku) - Documentation updates
 
+## Workflow Pipeline
+
+All workflows start with codebase analysis to ensure consistency:
+
+```
+Codebase Analysis → Extracts conventions and patterns
+     ↓
+Planning → Creates implementation plan using context
+     ↓
+Implementation → Follows conventions from context
+     ↓
+Review Chain → Validates against codebase patterns
+```
+
 ## Thorough Mode Review Chain
 
 In thorough mode, ALL gates must pass:
 
 ```
+Codebase Analysis (fresh)
+     ↓
+Planning (architect/opus)
+     ↓
 Implementation
      ↓
 Code Review (opus) → FAIL → Fix → Retry (max 3)
@@ -149,6 +170,7 @@ The plugin includes automated hooks (enabled by default):
 
 ## Features
 
+- **Codebase analysis** before planning (extracts conventions)
 - Org-mode based state tracking (default)
 - JSON state for light style
 - Tiered agent routing by mode

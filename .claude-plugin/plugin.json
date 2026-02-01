@@ -1,8 +1,9 @@
 {
   "name": "workflow",
   "description": "Automated development workflow orchestration with tiered agents and execution modes",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "agents": [
+    "agents/codebase-analyzer.md",
     "agents/architect-lite.md",
     "agents/architect.md",
     "agents/executor-lite.md",

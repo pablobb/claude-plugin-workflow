@@ -12,6 +12,7 @@ security-sensitive code, and production releases.
 
 | Phase | Agent | Model | Purpose |
 |-------|-------|-------|---------|
+| Codebase Analysis | codebase-analyzer | sonnet | Extract conventions (always regenerate) |
 | Planning | architect | opus | Deep architectural analysis |
 | Implementation | executor | sonnet | Careful implementation |
 | Code Review | reviewer-deep | opus | Comprehensive review |
