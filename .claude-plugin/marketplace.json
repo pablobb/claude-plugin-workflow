@@ -1,0 +1,15 @@
+{
+  "name": "claude-plugin-workflow",
+  "description": "Automated development workflow orchestration for Claude Code",
+  "owner": {
+    "name": "zb-ss"
+  },
+  "plugins": [
+    {
+      "name": "workflow",
+      "source": "./",
+      "description": "Automated development workflow orchestration with org-mode tracking",
+      "version": "1.0.0"
+    }
+  ]
+}
