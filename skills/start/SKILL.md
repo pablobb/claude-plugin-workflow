@@ -105,22 +105,73 @@ You are the **supervisor agent** for this workflow. You coordinate the entire pr
 
 1. **Parse input**:
    - First word = workflow type
-   - Look for `--mode=<mode>` flag (default: `standard`)
+   - Look for `--mode=<mode>` flag (if present, skip auto-detection)
    - Look for `--style=<style>` flag (default: `full`)
    - Rest = description
    - If type unknown, list available types and ask
 
-2. **Load mode configuration**:
+2. **Auto-detect mode** (if no `--mode` flag):
+
+   **Step 2a: Check for explicit keyword prefixes**
+   ```
+   thorough:, careful:, production: → thorough mode
+   quick:, fast:, prototype: → turbo mode
+   eco:, simple:, minor: → eco mode
+   ```
+
+   **Step 2b: If no prefix, analyze task complexity**
+
+   Spawn task-analyzer (haiku - fast and cheap):
+   ```
+   Task(
+     subagent_type="workflow:task-analyzer",
+     model="haiku",
+     prompt="""
+     Analyze this task for complexity and recommend a workflow mode.
+
+     Task type: {workflow_type}
+     Description: {description}
+
+     Return:
+     - recommended_mode: thorough|standard|turbo|eco
+     - confidence: high|medium|low
+     - reasoning: [list of factors]
+     """
+   )
+   ```
+
+   **Step 2c: Present recommendation to user**
+   ```
+   ┌─────────────────────────────────────────────────┐
+   │ AUTO-DETECTED MODE: thorough                    │
+   │                                                 │
+   │ Reasoning:                                      │
+   │ • Task involves authentication (+2)             │
+   │ • Security-sensitive keywords detected (+2)    │
+   │ • Multiple files likely affected (+1)          │
+   │                                                 │
+   │ Confidence: HIGH                               │
+   │                                                 │
+   │ [Enter] Accept  |  [--mode=X] Override         │
+   └─────────────────────────────────────────────────┘
+   ```
+
+   **Step 2d: Apply selected mode**
+   - If user accepts (or no response within context), use recommended mode
+   - If user specifies `--mode=X`, use their choice
+   - Log the mode selection decision in workflow state
+
+3. **Load mode configuration**:
    - Read `modes/<mode>.org` from the workflow plugin directory
    - Extract agent routing and settings
    - Apply to workflow execution
 
-3. **Ask about branch**:
+4. **Ask about branch**:
    - "Should I create a new branch for this work?"
    - Suggest: `feature/<short-description>` or `fix/<short-description>`
    - Or use current branch
 
-4. **Create workflow state**:
+5. **Create workflow state**:
    - Generate ID: `YYYYMMDD-<random>`
    - **If style=full**:
      - Find plugin templates in `templates/` directory
@@ -130,13 +181,13 @@ You are the **supervisor agent** for this workflow. You coordinate the entire pr
      - Create/update `~/.claude/workflows/state.json`
      - Use TodoWrite for step tracking
 
-5. **Run Codebase Analysis** (unless eco mode or context is fresh):
+6. **Run Codebase Analysis** (unless eco mode or context is fresh):
    - Check if context file exists: `~/.claude/workflows/context/<project-slug>.md`
    - If missing or older than 7 days, run `codebase-analyzer` agent
    - Store context file for all subsequent agents to reference
    - In eco mode, skip analysis to save tokens (use existing context if available)
 
-6. **Confirm with user**:
+7. **Confirm with user**:
    - Show workflow ID and state location
    - Show selected mode and its implications
    - Show context file status (fresh/generated/skipped)
@@ -148,11 +199,14 @@ Use the correct agent based on the mode:
 
 | Phase | standard | turbo | eco | thorough |
 |-------|----------|-------|-----|----------|
+| **Mode Detection** | task-analyzer (haiku) | task-analyzer (haiku) | task-analyzer (haiku) | task-analyzer (haiku) |
 | **Codebase Analysis** | codebase-analyzer | codebase-analyzer | skip | codebase-analyzer |
 | Planning | Plan | architect-lite | architect-lite | architect |
 | Implementation | focused-build | executor-lite | executor-lite | executor |
 | Code Review | reviewer | reviewer-lite | reviewer-lite | reviewer-deep |
 | Security | security | security-lite | security-lite | security-deep |
+| **Quality Gate** | quality-gate | quality-gate | quality-gate | quality-gate |
+| **Completion Guard** | completion-guard | completion-guard | completion-guard | completion-guard (opus) |
 | Testing | test-writer | - | - | test-writer |
 | Performance | - | - | - | perf-reviewer |
 | Documentation | - | - | - | doc-writer |

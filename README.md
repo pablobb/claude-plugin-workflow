@@ -35,25 +35,53 @@ This will check your settings and offer to add the required permissions for auto
 ### Start New Workflow
 
 ```bash
-# Standard mode (default)
+# Auto-detect mode (RECOMMENDED) - analyzes task complexity
 /workflow:start feature "Add user authentication"
+# → Auto-detects: thorough (security-sensitive)
 
-# With specific mode
-/workflow:start feature "Add payment processing" --mode=thorough
-/workflow:start bugfix "Fix login validation" --mode=eco
+/workflow:start bugfix "Fix typo in README"
+# → Auto-detects: eco (simple change)
+
+# Explicit mode keywords
+/workflow:start feature "thorough: Add payment processing"
+/workflow:start bugfix "quick: Prototype webhook handler"
+/workflow:start refactor "eco: Rename variable"
+
+# Override with flag (always wins)
+/workflow:start feature "Add payment processing" --mode=standard
 
 # With light style (JSON state instead of org)
-/workflow:start bugfix "Quick typo fix" --mode=eco --style=light
+/workflow:start bugfix "Quick typo fix" --style=light
 ```
+
+### Auto Mode Detection
+
+The plugin automatically selects the best mode based on task analysis:
+
+| Task Type | Auto-Selected Mode |
+|-----------|-------------------|
+| Auth, security, payment | **thorough** |
+| Database migrations | **thorough** |
+| New features | **standard** |
+| Bug fixes | **standard** |
+| Typos, docs, config | **eco** |
+| Prototypes (with `quick:`) | **turbo** |
+
+**Keyword triggers** (prefix your task):
+- `thorough:`, `careful:`, `production:` → thorough mode
+- `quick:`, `fast:`, `prototype:` → turbo mode
+- `eco:`, `simple:`, `minor:` → eco mode
 
 ### Execution Modes
 
 | Mode | Description | Model | Review Depth |
 |------|-------------|-------|--------------|
 | `standard` | Balanced (default) | sonnet | 1 code + 1 security |
-| `turbo` | Maximum speed | haiku | Advisory only |
-| `eco` | Token-efficient | haiku | 1 code review |
+| `turbo` | Maximum speed | haiku | 1 code + 1 security |
+| `eco` | Token-efficient | haiku | 1 code + 1 security |
 | `thorough` | Maximum quality | opus (reviews) | Multi-gate chain |
+
+**Note:** All modes now have MANDATORY reviews (no advisory mode).
 
 ### Planning Styles
 
@@ -99,7 +127,10 @@ This will check your settings and offer to add the required permissions for auto
 
 ## Agents
 
-The plugin includes 18 tiered agents:
+The plugin includes 19 tiered agents:
+
+### Mode Detection
+- `task-analyzer` (haiku) - Analyzes task complexity for auto mode selection
 
 ### Codebase Analysis
 - `codebase-analyzer` (sonnet) - Extracts conventions, patterns, best practices
