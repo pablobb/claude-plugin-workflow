@@ -11,7 +11,7 @@ In Claude Code, run:
 /plugin install workflow@zb-ss-claude-plugin-workflow
 ```
 
-After installation, run the setup command to configure permissions:
+After installation, restart CC and run the setup command to configure permissions:
 
 ```
 /workflow:setup
