@@ -256,14 +256,13 @@ Or manually add to your `.claude/settings.json`:
 {
   "permissions": {
     "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "~/.claude/workflows",
+      "~/.claude/plans"
+    ],
     "allow": [
       "Read", "Write", "Edit", "Glob", "Grep", "Task", "TodoWrite",
-      "Edit(~/.claude/workflows/**)",
-      "Write(~/.claude/workflows/**)",
-      "Edit(~/.claude/plans/**)",
-      "Write(~/.claude/plans/**)",
-      "Bash(mkdir -p ~/.claude/workflows)",
-      "Bash(mkdir -p ~/.claude/plans)",
+      "Bash(mkdir -p ~/.claude/workflows)", "Bash(mkdir -p ~/.claude/plans)",
       "Bash(git status)", "Bash(git diff *)", "Bash(git add *)",
       "Bash(git checkout -b *)", "Bash(npm run *)", "Bash(npm test *)",
       "Bash(composer *)", "Bash(php -l *)", "Bash(python -m pytest *)"
@@ -278,7 +277,7 @@ Or manually add to your `.claude/settings.json`:
 }
 ```
 
-**Important:** The `~/.claude/workflows/**` and `~/.claude/plans/**` permissions allow the workflow to manage state files without prompts.
+**Important:** The `additionalDirectories` setting grants Claude Code access to workflow state directories outside your project.
 
 See `resources/recommended-settings.json` for the full configuration.
 

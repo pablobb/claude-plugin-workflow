@@ -5,6 +5,11 @@
   "permissions": {
     "defaultMode": "acceptEdits",
 
+    "additionalDirectories": [
+      "~/.claude/workflows",
+      "~/.claude/plans"
+    ],
+
     "allow": [
       "Read",
       "Glob",
@@ -17,10 +22,6 @@
       "Task",
       "TodoWrite",
 
-      "Edit(~/.claude/workflows/**)",
-      "Write(~/.claude/workflows/**)",
-      "Edit(~/.claude/plans/**)",
-      "Write(~/.claude/plans/**)",
       "Bash(mkdir -p ~/.claude/workflows)",
       "Bash(mkdir -p ~/.claude/plans)",
 

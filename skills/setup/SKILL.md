@@ -23,13 +23,19 @@ The workflow plugin requires these permissions for autonomous operation:
 
 **Critical for state management (add to global `~/.claude/settings.json`):**
 ```json
-"Edit(~/.claude/workflows/**)",
-"Write(~/.claude/workflows/**)",
-"Edit(~/.claude/plans/**)",
-"Write(~/.claude/plans/**)",
-"Bash(mkdir -p ~/.claude/workflows)",
-"Bash(mkdir -p ~/.claude/plans)"
+"additionalDirectories": [
+  "~/.claude/workflows",
+  "~/.claude/plans"
+],
+"allow": [
+  "Edit",
+  "Write",
+  "Bash(mkdir -p ~/.claude/workflows)",
+  "Bash(mkdir -p ~/.claude/plans)"
+]
 ```
+
+The `additionalDirectories` setting grants access to paths outside the project directory.
 
 **Recommended for workflows (can be global or project-level):**
 ```json
