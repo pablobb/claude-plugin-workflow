@@ -59,44 +59,51 @@ for pattern in "${BLOCKED_ANYWHERE_PATTERNS[@]}"; do
     fi
 done
 
-# WORKFLOW MODE ALLOWED - no permission prompt needed
-if [[ "$IN_WORKFLOW" == "true" ]]; then
-    WORKFLOW_ALLOWED=(
-        "git branch"
-        "git checkout -b"
-        "git switch -c"
-        "git stash"
-        "git status"
-        "git diff"
-        "git log"
-        "git add"
-        "git commit"
-        "php -l"
-        "composer"
-        "npm"
-        "npx"
-        "yarn"
-        "pnpm"
-        "wc"
-        "ls"
-        "find"
-        "head"
-        "tail"
-        "cat"
-        "mkdir"
-        "cp"
-        "mv"
-        "touch"
-    )
+# SAFE COMMANDS - always auto-approve without permission prompt
+SAFE_COMMANDS=(
+    "git branch"
+    "git checkout -b"
+    "git switch -c"
+    "git stash"
+    "git status"
+    "git diff"
+    "git log"
+    "git add"
+    "git commit"
+    "php -l"
+    "composer"
+    "npm"
+    "npx"
+    "yarn"
+    "pnpm"
+    "wc"
+    "ls"
+    "find"
+    "head"
+    "tail"
+    "cat"
+    "mkdir"
+    "cp"
+    "mv"
+    "touch"
+    "echo"
+    "pwd"
+    "which"
+    "type"
+    "python3 -m py_compile"
+    "python3 -c"
+    "node"
+    "test"
+    "["
+)
 
-    for allowed in "${WORKFLOW_ALLOWED[@]}"; do
-        if [[ "$COMMAND" == "$allowed"* ]]; then
-            # Output JSON to auto-approve without prompting
-            echo "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"Auto-approved by workflow mode\"}}"
-            exit 0
-        fi
-    done
-fi
+for allowed in "${SAFE_COMMANDS[@]}"; do
+    if [[ "$COMMAND" == "$allowed"* ]]; then
+        # Output JSON to auto-approve without prompting
+        echo "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"Auto-approved safe command\"}}"
+        exit 0
+    fi
+done
 
 # For all other commands, let Claude Code's normal permission system handle it
 exit 0
