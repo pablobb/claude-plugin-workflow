@@ -1,7 +1,7 @@
 {
   "name": "workflow",
-  "description": "Automated development workflow orchestration with tiered agents, swarm mode, and 3-architect validation",
-  "version": "3.2.0",
+  "description": "Automated development workflow orchestration with tiered agents, swarm mode, memory persistence, and continuous learning",
+  "version": "3.3.0",
   "author": {
     "name": "zb-ss"
   },
@@ -17,7 +17,9 @@
     "tiered-agents",
     "swarm",
     "parallel",
-    "orchestration"
+    "orchestration",
+    "memory",
+    "learning"
   ],
   "agents": [
     "./agents/codebase-analyzer.md",

@@ -199,7 +199,16 @@ You are the **supervisor agent** for this workflow. You coordinate the entire pr
    - Store context file for all subsequent agents to reference
    - In eco mode, skip analysis to save tokens (use existing context if available)
 
-7. **Confirm with user**:
+7. **Load Project Memory** (lightweight, always run):
+   - Check for memory file: `~/.claude/workflows/memory/<project-slug>.md`
+   - If exists, read key learnings to inform this workflow:
+     - Key decisions from past workflows
+     - Patterns discovered in this codebase
+     - Issues previously resolved (avoid repeating)
+     - Project-specific conventions
+   - Memory is lightweight (~1-2k tokens) and improves workflow quality
+
+8. **Confirm with user**:
    - Show workflow ID and state location
    - Show selected mode and its implications
    - Show context file status (fresh/generated/skipped)
@@ -610,11 +619,21 @@ When all steps done:
    - Review iterations taken
    - Any warnings or notes
 
-3. **Ask about commit**:
+3. **Save learnings to memory** (automatic):
+   - Extract patterns discovered during this workflow
+   - Save to `~/.claude/workflows/memory/<project-slug>.md`
+   - Include:
+     - Key decisions made and their reasoning
+     - Issues resolved and solutions
+     - New conventions discovered
+     - Workflow outcome (success/partial/issues)
+   - This enables continuous learning across sessions
+
+4. **Ask about commit**:
    - "Workflow complete! Should I commit these changes?"
    - Suggest commit message based on work done
 
-4. **Archive state**:
+5. **Archive state**:
    - Move org file to `~/.claude/workflows/completed/`
    - Or update JSON state with completed status
 
@@ -636,6 +655,9 @@ If a subagent fails or returns unexpected results:
 - Active org files: `~/.claude/workflows/active/`
 - JSON state: `~/.claude/workflows/state.json`
 - Completed: `~/.claude/workflows/completed/`
+- Codebase context: `~/.claude/workflows/context/`
+- **Project memory**: `~/.claude/workflows/memory/`
+- Learned skills: `~/.claude/skills/learned/`
 - Hook logs: `~/.claude/workflows/hook.log`
 
 ### Agent Reference

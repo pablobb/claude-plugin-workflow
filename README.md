@@ -29,6 +29,8 @@ This will check your settings and offer to add the required permissions for auto
 | resume | `/workflow:resume` | Resume an existing workflow |
 | mode | `/workflow:mode` | Switch execution mode |
 | verify | `/workflow:verify` | Run verification loop |
+| learn | `/workflow:learn` | Extract reusable patterns from current session |
+| skill-create | `/workflow:skill-create` | Generate skills from git history |
 
 ## Usage Examples
 
@@ -343,6 +345,8 @@ The plugin includes automated hooks (enabled by default):
 - **Codebase analysis** before planning (extracts conventions)
 - **Parallel agent execution** where phases are independent
 - **Fully autonomous mode** - no permission prompts for safe operations
+- **Memory persistence** - learnings saved across sessions
+- **Continuous learning** - patterns extracted and reused
 - Org-mode based state tracking (default)
 - JSON state for light style
 - Tiered agent routing by mode
@@ -351,6 +355,75 @@ The plugin includes automated hooks (enabled by default):
 - Progress persistence
 - Error recovery
 - Branch management
+
+## Memory & Learning (New in v3.3)
+
+The plugin now includes lightweight memory persistence and continuous learning:
+
+### Project Memory
+
+Each project maintains a memory file at `~/.claude/workflows/memory/<project>.md`:
+
+```markdown
+# Project Memory: my-app
+
+## Key Decisions
+- Using repository pattern for data access
+- Chose Zod over Yup for validation
+
+## Patterns Discovered
+- Barrel exports in each module's index.ts
+- Result<T, E> pattern for error handling
+
+## Issues Resolved
+- ESLint conflict with Prettier: added eslint-config-prettier
+
+## Conventions Learned
+- API responses wrapped in { data, error, meta }
+```
+
+Memory is automatically:
+- **Loaded** at workflow start (~1-2k tokens, lightweight)
+- **Updated** at workflow completion with new learnings
+
+### Extract Patterns Mid-Session
+
+```bash
+/workflow:learn
+```
+
+Extracts reusable patterns from the current session:
+- Error resolutions with root causes
+- Debugging approaches that worked
+- Workarounds for library quirks
+- Project-specific conventions
+
+Saves to:
+- `~/.claude/workflows/memory/<project>.md` (project-specific)
+- `~/.claude/skills/learned/<pattern>.md` (reusable across projects)
+
+### Generate Skills from Git History
+
+```bash
+/workflow:skill-create
+```
+
+Analyzes git history to auto-generate project skills:
+- Commit message conventions
+- File co-change patterns
+- Architecture patterns
+- Testing conventions
+
+Run once per project, skills are auto-loaded thereafter.
+
+### Context Budget
+
+Memory is designed to be lightweight:
+- Project memory: ~1-2k tokens
+- Learned skills: ~500 tokens each
+- Git-generated skills: ~1k tokens total
+
+This keeps context impact minimal while improving workflow quality.
 
 ## Autonomous Execution
 
