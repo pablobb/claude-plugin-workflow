@@ -69,6 +69,16 @@ Only pause for:
 | `turbo` | Maximum speed | haiku | Advisory only |
 | `eco` | Token-efficient | haiku | 1 code review |
 | `thorough` | Maximum quality | opus (reviews) | Multi-gate chain |
+| `swarm` | Maximum parallelism | opus (validation) | 3-architect competitive |
+
+### Swarm Mode Details
+
+Swarm mode enables:
+- **Orchestrator-only execution** - Main agent never writes code, only delegates
+- **Aggressive task decomposition** - Break work into parallel batches
+- **4 parallel executors** per batch for implementation
+- **3-architect validation** - Functional, Security, Quality (all must pass)
+- **Supervisor agent** coordinates all work
 
 ## Planning Styles
 
@@ -82,6 +92,8 @@ Only pause for:
 /workflow:start feature Add user authentication with JWT tokens
 /workflow:start bugfix Fix race condition in payment --mode=thorough
 /workflow:start refactor Extract validation logic --mode=eco --style=light
+/workflow:start feature swarm: Build complete notification system with email, SMS, push
+/workflow:start feature Implement user management --mode=swarm
 ```
 
 ## Input
@@ -197,19 +209,22 @@ You are the **supervisor agent** for this workflow. You coordinate the entire pr
 
 Use the correct agent based on the mode:
 
-| Phase | standard | turbo | eco | thorough |
-|-------|----------|-------|-----|----------|
-| **Mode Detection** | task-analyzer (haiku) | task-analyzer (haiku) | task-analyzer (haiku) | task-analyzer (haiku) |
-| **Codebase Analysis** | codebase-analyzer | codebase-analyzer | skip | codebase-analyzer |
-| Planning | Plan | architect-lite | architect-lite | architect |
-| Implementation | focused-build | executor-lite | executor-lite | executor |
-| Code Review | reviewer | reviewer-lite | reviewer-lite | reviewer-deep |
-| Security | security | security-lite | security-lite | security-deep |
-| **Quality Gate** | quality-gate | quality-gate | quality-gate | quality-gate |
-| **Completion Guard** | completion-guard | completion-guard | completion-guard | completion-guard (opus) |
-| Testing | test-writer | - | - | test-writer |
-| Performance | - | - | - | perf-reviewer |
-| Documentation | - | - | - | doc-writer |
+| Phase | standard | turbo | eco | thorough | swarm |
+|-------|----------|-------|-----|----------|-------|
+| **Mode Detection** | task-analyzer | task-analyzer | task-analyzer | task-analyzer | task-analyzer |
+| **Codebase Analysis** | codebase-analyzer | codebase-analyzer | skip | codebase-analyzer | codebase-analyzer |
+| **Orchestration** | - | - | - | - | supervisor |
+| Planning | Plan | architect-lite | architect-lite | architect | architect (opus) |
+| **Decomposition** | - | - | - | - | supervisor |
+| Implementation | focused-build | executor-lite | executor-lite | executor | executor ×4 (parallel) |
+| Code Review | reviewer | reviewer-lite | reviewer-lite | reviewer-deep | reviewer-deep ×3 |
+| Security | security | security-lite | security-lite | security-deep | security-deep (parallel) |
+| Quality Review | - | - | - | - | reviewer-deep (parallel) |
+| **Quality Gate** | quality-gate | quality-gate | quality-gate | quality-gate | quality-gate |
+| **Completion Guard** | completion-guard | completion-guard | completion-guard | completion-guard (opus) | completion-guard (opus) |
+| Testing | test-writer | - | - | test-writer | test-writer (parallel) |
+| Performance | - | - | - | perf-reviewer | perf-reviewer |
+| Documentation | - | - | - | doc-writer | doc-writer |
 
 ### Model Selection
 
@@ -359,6 +374,46 @@ result2 = TaskOutput(task_id=agent2.id)
 - Completion Guard: **FULL** verification with opus
 - Performance: advisory (after all gates pass)
 - Documentation: advisory (after all gates pass)
+
+#### Swarm Mode - 3-Architect Competitive Validation
+
+**Orchestrator-only execution:** The supervisor agent coordinates all work. You NEVER write code directly.
+
+**Implementation Phase:**
+1. Supervisor decomposes task into parallel batches
+2. Max 4 parallel executors per batch
+3. Batch 1: interfaces/types
+4. Batch 2: implementations (depends on batch 1)
+5. Batch 3: tests (depends on batch 2)
+
+**3-Architect Validation (all must pass):**
+```
+┌─────────────────────────────────────────────────────────┐
+│              3-ARCHITECT VALIDATION                     │
+├─────────────────────────────────────────────────────────┤
+│  ARCHITECT 1       ARCHITECT 2       ARCHITECT 3       │
+│  Functional        Security          Code Quality      │
+│  Completeness      (security-deep)   (reviewer-deep)   │
+│  (architect)       OWASP, auth       SOLID, patterns   │
+│       │                │                  │            │
+│       └────────────────┴──────────────────┘            │
+│                        │                               │
+│                    AGGREGATOR                          │
+│              ALL PASS → Continue                       │
+│              ANY FAIL → Fix → Retry                    │
+└─────────────────────────────────────────────────────────┘
+```
+
+- Architect 1: Functional completeness review (opus)
+- Architect 2: Security review (security-deep/opus)
+- Architect 3: Code quality review (reviewer-deep/opus)
+- ALL three run in **parallel**
+- ALL three must **PASS**
+- Max 3 retry cycles if failures
+
+**Quality Gates:**
+- Quality Gate: **MANDATORY** after 3-architect approval
+- Completion Guard: **MANDATORY** with opus
 
 ### Zero Tolerance Policy
 

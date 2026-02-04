@@ -1,7 +1,7 @@
 {
   "name": "workflow",
-  "description": "Automated development workflow orchestration with tiered agents and execution modes",
-  "version": "3.1.0",
+  "description": "Automated development workflow orchestration with tiered agents, swarm mode, and 3-architect validation",
+  "version": "3.2.0",
   "author": {
     "name": "zb-ss"
   },
@@ -14,7 +14,10 @@
     "automation",
     "code-review",
     "security",
-    "tiered-agents"
+    "tiered-agents",
+    "swarm",
+    "parallel",
+    "orchestration"
   ],
   "agents": [
     "./agents/codebase-analyzer.md",
@@ -35,7 +38,8 @@
     "./agents/doc-writer.md",
     "./agents/quality-gate.md",
     "./agents/completion-guard.md",
-    "./agents/task-analyzer.md"
+    "./agents/task-analyzer.md",
+    "./agents/supervisor.md"
   ],
   "skills": [
     "./skills/"

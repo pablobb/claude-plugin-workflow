@@ -1,0 +1,191 @@
+#+TITLE: Swarm Mode Configuration
+#+DESCRIPTION: Maximum parallelism with orchestrator-only execution and 3-architect validation
+#+MODE: swarm
+#+VERSION: 1.0.0
+
+* Swarm Mode
+
+Swarm mode enables aggressive parallel execution with competitive 3-architect validation.
+
+** Core Principles
+
+1. *Orchestrator-Only*: Main agent NEVER writes code - only delegates
+2. *Aggressive Parallelism*: Decompose into smallest parallel units
+3. *Competitive Validation*: 3 architects review different aspects simultaneously
+4. *Zero Tolerance*: All validation gates must pass
+
+** Agent Routing
+
+| Phase               | Agent                  | Model  | Parallel |
+|---------------------+------------------------+--------+----------|
+| Task Analysis       | task-analyzer          | haiku  | no       |
+| Codebase Analysis   | codebase-analyzer      | sonnet | no       |
+| Orchestration       | supervisor             | sonnet | no       |
+| Planning            | architect              | opus   | no       |
+| Decomposition       | supervisor             | sonnet | no       |
+| Implementation      | executor (multiple)    | sonnet | YES (4)  |
+| Code Review         | reviewer-deep          | opus   | YES (3)  |
+| Security Review     | security-deep          | opus   | YES (3)  |
+| Quality Review      | reviewer-deep          | opus   | YES (3)  |
+| Quality Gate        | quality-gate           | sonnet | no       |
+| Completion Guard    | completion-guard       | opus   | no       |
+
+** Parallel Execution Strategy
+
+*** Implementation Phase
+- Maximum 4 parallel executors per batch
+- Group by file independence
+- Interface/stub batch first, then implementations
+
+#+begin_src
+Batch 1 (parallel):
+├── executor-1: interfaces/types
+├── executor-2: core service A
+├── executor-3: core service B
+└── executor-4: controller stubs
+
+Batch 2 (parallel - depends on batch 1):
+├── executor-1: service implementations
+├── executor-2: repository implementations
+├── executor-3: controller implementations
+└── executor-4: middleware/helpers
+
+Batch 3 (parallel - depends on batch 2):
+├── executor-1: unit tests A
+├── executor-2: unit tests B
+├── executor-3: integration tests
+└── executor-4: e2e tests
+#+end_src
+
+*** 3-Architect Validation
+
+ALL three must approve before proceeding:
+
+#+begin_src
+┌─────────────────────────────────────────────────────────┐
+│              3-ARCHITECT VALIDATION                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │ ARCHITECT 1 │  │ ARCHITECT 2 │  │ ARCHITECT 3 │     │
+│  │ Functional  │  │  Security   │  │   Quality   │     │
+│  │ Completeness│  │   Review    │  │   Patterns  │     │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘     │
+│         │                │                │             │
+│         ▼                ▼                ▼             │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │              AGGREGATOR                          │   │
+│  │  ALL must PASS → Continue                       │   │
+│  │  ANY FAIL → Aggregate issues → Fix → Retry      │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+#+end_src
+
+** Validation Focuses
+
+*** Architect 1: Functional Completeness
+- All requirements implemented
+- Edge cases handled
+- Error states covered
+- User flows complete
+- API contracts satisfied
+
+*** Architect 2: Security
+- OWASP Top 10 compliance
+- Authentication/authorization
+- Input validation
+- SQL injection prevention
+- XSS prevention
+- CSRF protection
+- Sensitive data handling
+
+*** Architect 3: Code Quality
+- SOLID principles
+- DRY compliance
+- Naming conventions
+- Complexity metrics
+- Test coverage
+- Documentation
+- Maintainability
+
+** Retry Strategy
+
+#+begin_src
+MAX_VALIDATION_RETRIES = 3
+
+while validation_failed and retries < MAX_VALIDATION_RETRIES:
+    1. Aggregate all failures from 3 architects
+    2. Spawn executor to fix issues
+    3. Re-run 3-architect validation
+    4. retries++
+
+if still_failing:
+    pause_for_user_intervention()
+#+end_src
+
+** Comparison with Other Modes
+
+| Feature                    | standard | thorough | swarm     |
+|----------------------------+----------+----------+-----------|
+| Orchestrator-only          | no       | no       | YES       |
+| Parallel implementation    | limited  | limited  | aggressive |
+| Parallel executors/batch   | 1        | 2        | 4         |
+| Validation architects      | 1        | 1        | 3         |
+| Model tier (validation)    | sonnet   | opus     | opus      |
+| Auto-decomposition         | no       | no       | YES       |
+| Task batching              | no       | partial  | YES       |
+
+** Token Efficiency
+
+Swarm uses MORE tokens than other modes but:
+- Parallel execution = faster wall-clock time
+- 3-architect validation = higher quality
+- Aggressive decomposition = better parallelization
+- Orchestrator-only = cleaner separation of concerns
+
+Estimated token multiplier: 1.5-2x vs standard mode
+
+** State Tracking
+
+#+begin_src org
+* Swarm State
+** Orchestrator Session: <id>
+** Decomposition
+*** Batch 1: Interfaces
+    - [ ] Task 1.1: UserService interface
+    - [ ] Task 1.2: UserRepository interface
+*** Batch 2: Implementations
+    - [ ] Task 2.1: UserService impl
+    - [ ] Task 2.2: UserRepository impl
+** Validation
+*** Architect 1: Functional
+    - Status: PENDING
+    - Verdict: -
+*** Architect 2: Security
+    - Status: PENDING
+    - Verdict: -
+*** Architect 3: Quality
+    - Status: PENDING
+    - Verdict: -
+** Quality Gate: PENDING
+** Completion Guard: PENDING
+#+end_src
+
+** Trigger Keywords
+
+Auto-select swarm mode with:
+- ~swarm:~ prefix
+- ~parallel:~ prefix
+- ~multiagent:~ prefix
+- ~max-quality:~ prefix
+
+Or explicitly: ~--mode=swarm~
+
+** Best For
+
+- Large feature implementations
+- Critical production code
+- Multi-file refactors
+- When quality > speed > cost
+- Complex architectural changes

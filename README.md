@@ -71,6 +71,7 @@ The plugin automatically selects the best mode based on task analysis:
 - `thorough:`, `careful:`, `production:` → thorough mode
 - `quick:`, `fast:`, `prototype:` → turbo mode
 - `eco:`, `simple:`, `minor:` → eco mode
+- `swarm:`, `parallel:`, `multiagent:` → swarm mode
 
 ### Execution Modes
 
@@ -80,8 +81,38 @@ The plugin automatically selects the best mode based on task analysis:
 | `turbo` | Maximum speed | haiku | 1 code + 1 security |
 | `eco` | Token-efficient | haiku | 1 code + 1 security |
 | `thorough` | Maximum quality | opus (reviews) | Multi-gate chain |
+| `swarm` | Maximum parallelism | opus (validation) | 3-architect competitive |
 
 **Note:** All modes now have MANDATORY reviews (no advisory mode).
+
+### Swarm Mode (New in v3.2)
+
+Swarm mode enables aggressive parallel execution with competitive 3-architect validation:
+
+**Key Features:**
+- **Orchestrator-only** - Main agent NEVER writes code, only delegates to supervisor
+- **Aggressive parallelism** - Up to 4 executors per batch
+- **3-architect validation** - Functional, Security, Quality (all must pass)
+- **Task decomposition** - Automatic batching of independent tasks
+
+**3-Architect Validation:**
+```
+┌─────────────────────────────────────────────────────┐
+│ ARCHITECT 1      ARCHITECT 2      ARCHITECT 3      │
+│ Functional       Security         Code Quality     │
+│ (completeness)   (OWASP)          (SOLID/patterns) │
+│      │               │                 │           │
+│      └───────────────┴─────────────────┘           │
+│                      │                             │
+│              ALL MUST PASS                         │
+└─────────────────────────────────────────────────────┘
+```
+
+**When to use swarm:**
+- Large features (10+ files)
+- Multi-service implementations
+- When quality > speed > cost
+- Critical production code
 
 ### Planning Styles
 
@@ -127,7 +158,10 @@ The plugin automatically selects the best mode based on task analysis:
 
 ## Agents
 
-The plugin includes 19 tiered agents:
+The plugin includes 20 tiered agents:
+
+### Orchestration (Swarm Mode)
+- `supervisor` (sonnet) - Orchestrator-only agent that delegates all work, never implements directly
 
 ### Mode Detection
 - `task-analyzer` (haiku) - Analyzes task complexity for auto mode selection
@@ -241,6 +275,59 @@ COMPLETION GUARD (opus) → Full verification
 COMPLETE
 ```
 
+## Swarm Mode Pipeline
+
+In swarm mode, the supervisor orchestrates parallel execution:
+
+```
+Codebase Analysis
+     ↓
+SUPERVISOR (orchestrator-only, never implements)
+     ↓
+Planning (architect/opus)
+     ↓
+TASK DECOMPOSITION
+     ↓
+┌─────────────────────────────────────────────────────┐
+│ BATCH 1 (parallel - max 4 executors)               │
+│ executor-1: interfaces/types                       │
+│ executor-2: service A stub                         │
+│ executor-3: service B stub                         │
+│ executor-4: controller stubs                       │
+└─────────────────────────────────────────────────────┘
+     ↓ ALL COMPLETE
+┌─────────────────────────────────────────────────────┐
+│ BATCH 2 (parallel - depends on batch 1)            │
+│ executor-1: service A implementation               │
+│ executor-2: service B implementation               │
+│ executor-3: controller implementation              │
+│ executor-4: middleware/helpers                     │
+└─────────────────────────────────────────────────────┘
+     ↓ ALL COMPLETE
+┌─────────────────────────────────────────────────────┐
+│ BATCH 3 (parallel - depends on batch 2)            │
+│ executor-1: unit tests                             │
+│ executor-2: integration tests                      │
+│ executor-3: e2e tests (if applicable)              │
+└─────────────────────────────────────────────────────┘
+     ↓ ALL COMPLETE
+┌─────────────────────────────────────────────────────┐
+│ 3-ARCHITECT VALIDATION (parallel)                  │
+│                                                    │
+│ architect-1: Functional completeness (opus)        │
+│ architect-2: Security review (security-deep)       │
+│ architect-3: Code quality (reviewer-deep)          │
+│                                                    │
+│ ALL THREE MUST PASS                                │
+└─────────────────────────────────────────────────────┘
+     ↓ ALL PASS (or retry max 3)
+QUALITY GATE
+     ↓ PASS
+COMPLETION GUARD (opus)
+     ↓ APPROVED
+COMPLETE
+```
+
 ## Hooks
 
 The plugin includes automated hooks (enabled by default):
@@ -288,6 +375,7 @@ Workflows run **without asking permission** for:
 | standard | Code + Security reviews parallel on first pass |
 | thorough | Performance + Documentation checks parallel |
 | eco | Sequential only (minimize tokens) |
+| swarm | 4 executors/batch, 3-architect validation, aggressive parallelism |
 
 ## Workflow Best Practices
 
@@ -303,6 +391,8 @@ Workflows run **without asking permission** for:
 | Quick prototype | turbo |
 | Simple bug fix | eco |
 | Regular feature | standard |
+| Large multi-file feature | swarm |
+| Multi-service implementation | swarm |
 | Security-sensitive | thorough |
 | Production release | thorough |
 | Budget-conscious | eco |

@@ -45,6 +45,18 @@ trivial:
 
 Example: `eco: fix typo in error message`
 
+### Swarm Mode
+```
+swarm:
+parallel:
+multiagent:
+orchestrate:
+max-quality:
+competitive:
+```
+
+Example: `swarm: implement complete user management system`
+
 ## Natural Language Triggers
 
 These phrases anywhere in the description influence mode selection:
@@ -76,6 +88,16 @@ These phrases anywhere in the description influence mode selection:
 - "simple update"
 - "just rename"
 - "minor tweak"
+
+### Swarm Mode Phrases
+- "full system"
+- "complete implementation"
+- "multiple services"
+- "end to end"
+- "entire module"
+- "comprehensive"
+- "all components"
+- "parallel development"
 
 ## Complexity Keywords
 
@@ -166,13 +188,21 @@ docs/**
 - 1 file: -1 complexity
 - 2-5 files: no change
 - 6-10 files: +1 complexity
-- 11+ files: +2 complexity
+- 11+ files: +2 complexity (consider swarm)
 
 ### Line Count Impact (estimated)
 - < 50 lines: -1 complexity
 - 50-200 lines: no change
 - 200-500 lines: +1 complexity
-- 500+ lines: +2 complexity
+- 500+ lines: +2 complexity (consider swarm)
+
+### Swarm Mode Triggers (Large Scope)
+Swarm mode is recommended when:
+- Estimated 10+ files to create/modify
+- Task involves multiple independent services/modules
+- Task can be parallelized into 3+ batches
+- User explicitly requests "parallel" or "multiagent" execution
+- Task description mentions "complete system" or "full implementation"
 
 ## Override Rules
 
@@ -182,14 +212,17 @@ docs/**
 
 ## Decision Matrix
 
-| Thorough Score | Standard Score | Eco Score | Result |
-|----------------|----------------|-----------|--------|
-| ≥ 4 | any | any | thorough |
-| 2-3 | any | any | thorough |
-| 1 | ≥ 2 | any | standard |
-| 0 | ≥ 1 | any | standard |
-| 0 | 0 | ≥ 2 | eco |
-| 0 | 0 | 0-1 | standard |
+| Thorough Score | Standard Score | Eco Score | Scope | Result |
+|----------------|----------------|-----------|-------|--------|
+| any | any | any | 10+ files | swarm |
+| ≥ 4 | any | any | any | thorough |
+| 2-3 | any | any | any | thorough |
+| 1 | ≥ 2 | any | any | standard |
+| 0 | ≥ 1 | any | any | standard |
+| 0 | 0 | ≥ 2 | any | eco |
+| 0 | 0 | 0-1 | any | standard |
+
+**Note:** Swarm mode has highest priority when scope is large (10+ files) because parallel execution provides significant speed benefits for large tasks.
 
 ## Examples
 
@@ -215,3 +248,12 @@ docs/**
 ### "Update README with new installation steps"
 - Keywords: README (+1 eco), docs implied
 - **Result: eco**
+
+### "swarm: Implement complete user management with CRUD, roles, and permissions"
+- Explicit prefix: swarm
+- **Result: swarm** (overrides any analysis)
+
+### "Build the entire notification system with email, SMS, and push"
+- Keywords: entire (+1 swarm), multiple services implied
+- Estimated scope: 15+ files
+- **Result: swarm** (large scope auto-triggers)
