@@ -56,6 +56,12 @@ function processHook(rawInput) {
 
   // SECURITY FIX (CRITICAL-2): Detect shell metacharacters that enable command chaining
   if (containsShellMetacharacters(command)) {
+    // Allow reading Claude Code's task output files (safe pipe patterns)
+    if (isSafeTaskOutputRead(command)) {
+      outputDecision('allow', 'Auto-approved task output read');
+      return;
+    }
+
     // Command contains chaining operators - apply stricter checking
     if (containsBlockedPatternAnywhere(command)) {
       outputDecision('deny', 'Blocked: Command contains dangerous patterns with shell operators');
@@ -99,6 +105,30 @@ function containsShellMetacharacters(command) {
   ];
 
   return shellMetacharacters.some(char => command.includes(char));
+}
+
+/**
+ * Check if command is a safe read of Claude Code task output files
+ * Pattern: tail/cat/head reading from /tmp/claude-<uid>/*/tasks/*.output piped to head/tail
+ */
+function isSafeTaskOutputRead(command) {
+  // Claude Code task output paths look like:
+  // /tmp/claude-1000/-home-user-project/tasks/abc123.output
+  const claudeTaskOutputPattern = /\/tmp\/claude-\d+\/[^;`$]+\/tasks\/[a-f0-9]+\.output/i;
+
+  // Only allow if the command:
+  // 1. Starts with a read command (tail, head, cat)
+  // 2. Contains a Claude task output path
+  // 3. Only pipes to head or tail (safe transformations)
+  const startsWithReadCmd = /^(tail|head|cat)\s/.test(command);
+  const hasTaskOutputPath = claudeTaskOutputPattern.test(command);
+  const onlyPipesToSafe = !command.includes('|') ||
+    /\|\s*(head|tail)(\s|$)/.test(command);
+
+  // Also check it doesn't contain dangerous patterns
+  const noDangerousPatterns = !containsBlockedPatternAnywhere(command);
+
+  return startsWithReadCmd && hasTaskOutputPath && onlyPipesToSafe && noDangerousPatterns;
 }
 
 /**
