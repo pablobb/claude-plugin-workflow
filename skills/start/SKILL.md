@@ -10,6 +10,20 @@ This workflow runs in **fully autonomous agentic mode**. Do NOT ask for permissi
 > See `resources/recommended-settings.json` or run:
 > `cp ~/.claude/plugins/workflow/resources/recommended-settings.json .claude/settings.local.json`
 
+### CRITICAL: Use Native Tools, NOT Bash for File Operations
+
+**NEVER use bash commands for file operations in `~/.claude/` directories:**
+- ❌ `ls -la ~/.claude/workflows/...` - will prompt for permission
+- ❌ `cat ~/.claude/workflows/...` - will prompt for permission
+- ❌ `mkdir ~/.claude/...` - will prompt for permission
+
+**ALWAYS use native Claude Code tools:**
+- ✅ `Glob(pattern="<absolute-path>/*")` - to list files
+- ✅ `Read(file_path="<absolute-path>/file.md")` - to read files
+- ✅ `Write(file_path="<absolute-path>/file.md", content=...)` - to create files/directories
+
+The native tools respect `additionalDirectories` settings. Bash commands do not.
+
 ### Permission Model
 
 **DO WITHOUT ASKING (autonomous):**
@@ -131,11 +145,15 @@ You are the **supervisor agent** for this workflow. You coordinate the entire pr
 
 **BEFORE doing anything else**, ensure workflow directories exist.
 
-**Step 0a: Get home directory path**
-First, get the absolute home directory path:
-```bash
-echo $HOME
-```
+**Step 0a: Determine home directory path**
+Get the absolute home directory path. You can:
+- Use the path from the environment (visible in system info)
+- Or use bash `echo $HOME` (this one bash command is acceptable)
+
+Common paths:
+- Linux: `/home/<username>`
+- macOS: `/Users/<username>`
+- Windows: `C:\Users\<username>`
 
 **Step 0b: Create directories using absolute paths**
 Use the Write tool with ABSOLUTE paths (not `~`). For example, if HOME is `/home/user`:
@@ -261,13 +279,15 @@ If directories cannot be created, **STOP** and inform the user to run `/workflow
    - This ensures no permission prompts and cross-platform operation
 
 6. **Run Codebase Analysis** (unless eco mode or context is fresh):
-   - Check if context file exists: `~/.claude/workflows/context/<project-slug>.md`
-   - If missing or older than 7 days, run `codebase-analyzer` agent
+   - **Use Read tool** to check if context file exists: `<HOME>/.claude/workflows/context/<project-slug>.md`
+   - **NEVER use bash ls** - use Read or Glob tools only
+   - If file doesn't exist or is older than 7 days, run `codebase-analyzer` agent
    - Store context file for all subsequent agents to reference
    - In eco mode, skip analysis to save tokens (use existing context if available)
 
 7. **Load Project Memory** (lightweight, always run):
-   - Check for memory file: `~/.claude/workflows/memory/<project-slug>.md`
+   - **Use Read tool** to check for memory file: `<HOME>/.claude/workflows/memory/<project-slug>.md`
+   - **NEVER use bash ls or cat** - always use Read tool
    - If exists, read key learnings to inform this workflow:
      - Key decisions from past workflows
      - Patterns discovered in this codebase
