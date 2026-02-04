@@ -332,13 +332,17 @@ COMPLETE
 
 ## Hooks
 
-The plugin includes automated hooks (enabled by default):
+The plugin includes automated hooks (enabled by default, **cross-platform**):
 
-- **TypeScript**: Type-check after edits
-- **PHP**: Syntax-check after edits
-- **Python**: Syntax-check after edits
-- **JSON**: Validate after writes
-- **Safety**: Block dangerous commands
+| Hook | Trigger | Platforms |
+|------|---------|-----------|
+| TypeScript validation | After `.ts`/`.tsx` edits | Windows, macOS, Linux |
+| PHP syntax check | After `.php` edits | Windows, macOS, Linux |
+| Python syntax check | After `.py` edits | Windows, macOS, Linux |
+| JSON validation | After `.json` writes | Windows, macOS, Linux |
+| Permission check | Before Bash commands | Windows, macOS, Linux |
+
+Hooks are written in **Node.js** for full cross-platform compatibility. They gracefully skip validation if the required tool (php, python, etc.) is not installed.
 
 ## Features
 
@@ -512,6 +516,16 @@ See `resources/multi-instance-parallelism.md` for the full guide.
 
 - Claude Code with Task tool access
 - Git repository
+- Node.js (for hooks - included with Claude Code)
+
+### Platform Support
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| Linux | ✅ Full | Native support |
+| macOS | ✅ Full | Native support |
+| Windows | ✅ Full | Cross-platform hooks |
+| WSL | ✅ Full | Runs as Linux |
 
 ## Recommended Settings
 

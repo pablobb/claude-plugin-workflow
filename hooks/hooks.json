@@ -1,5 +1,5 @@
 {
-  "description": "Workflow plugin hooks for automated validation",
+  "description": "Workflow plugin hooks for automated validation (cross-platform)",
   "hooks": {
     "PostToolUse": [
       {
@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "FILE=\"$CLAUDE_FILE_PATH\"; case \"$FILE\" in *.ts|*.tsx) npx tsc --noEmit 2>&1 | grep -E \"$(basename \"$FILE\")\" | head -5 || true ;; *.php) php -l \"$FILE\" 2>&1 || true ;; *.py) python3 -m py_compile \"$FILE\" 2>&1 || true ;; *.json) python3 -c \"import json; json.load(open('$FILE'))\" 2>&1 || true ;; esac",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/validate-file.js\"",
             "timeout": 15
           }
         ]
@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/workflow-permission-check.sh\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/permission-check.js\"",
             "timeout": 10
           }
         ]
