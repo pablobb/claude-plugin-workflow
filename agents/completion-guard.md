@@ -207,26 +207,57 @@ mv "$HOME_DIR/.claude/workflows/active/<workflow-id>.org" \
 
 This keeps the active directory clean and provides history.
 
-### 2. Extract and Save Learnings
+### 2. Extract and Save Learnings to Project CLAUDE.md
 
-Before closing, extract valuable patterns from this workflow:
+Save valuable patterns to the **project's root CLAUDE.md** so they're auto-loaded by Claude Code:
 
-```
-## Learnings to Save
-
-Analyze the workflow for:
-- Error patterns encountered and their solutions
-- Codebase conventions discovered
-- Key architectural decisions made
-- Useful debugging approaches
-
-Save to: $HOME/.claude/workflows/memory/<project-slug>.md
+```bash
+# Check if project CLAUDE.md exists
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 ```
 
-Use the Write tool with ABSOLUTE path (not ~):
+**If `$PROJECT_ROOT/CLAUDE.md` exists:**
+- Read existing content with Read tool
+- Use Edit tool to append new learnings under `## Workflow Learnings` section
+- Avoid duplicating existing entries
+
+**If it doesn't exist:**
+- Use Write tool to create it with initial structure:
+
+```markdown
+# Project Instructions
+
+## Workflow Learnings
+
+### Patterns Discovered
+- <pattern from this workflow>
+
+### Issues Resolved
+- <issue and solution>
+
+### Key Decisions
+- <architectural decision made>
 ```
-Write(file_path="$HOME_DIR/.claude/workflows/memory/<project-slug>.md", content="...")
+
+```markdown
+## Workflow Learnings
+
+### Patterns Discovered
+- <pattern from this workflow>
+
+### Issues Resolved
+- <issue and solution>
+
+### Key Decisions
+- <architectural decision made>
 ```
+
+Use Edit tool to append (or Write to create):
+```
+Edit(file_path="$PROJECT_ROOT/CLAUDE.md", ...)
+```
+
+**Why project CLAUDE.md?** - Claude Code auto-loads it for ALL sessions, not just workflows.
 
 ### 3. Update Workflow Status
 
@@ -236,16 +267,14 @@ Update the workflow file's STATUS property before moving:
 #+PROPERTY: COMPLETED_AT <timestamp>
 ```
 
-## Memory vs CLAUDE.md
+## Where Learnings Are Saved
 
-**Workflow memory** (`~/.claude/workflows/memory/<project>.md`):
-- Per-project learnings from workflows
-- Loaded when starting workflows on that project
-- Persists across sessions
+**Project `CLAUDE.md`** (root level):
+- Workflow learnings are appended here under `## Workflow Learnings`
+- Auto-loaded by Claude Code for ALL sessions (not just workflows)
+- Shared with team via git
 
-**CLAUDE.md** (`~/.claude/CLAUDE.md` or project `.claude/CLAUDE.md`):
-- Global user preferences and coding conventions
+**Global `~/.claude/CLAUDE.md`**:
+- Your personal coding preferences
 - Always loaded in system prompt
-- Not workflow-specific
-
-Both are valuable but serve different purposes.
+- Not modified by workflows

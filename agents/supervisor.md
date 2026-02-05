@@ -271,18 +271,15 @@ mv "$HOME_DIR/.claude/workflows/active/<workflow-id>.org" \
    "$HOME_DIR/.claude/workflows/completed/"
 ```
 
-### 2. Save Project Learnings
+### 2. Save Learnings to Project CLAUDE.md
 
-Extract valuable patterns and save to memory:
+Extract valuable patterns and append to the project's root `CLAUDE.md`:
 ```bash
-# Get project slug
-PROJECT_SLUG=$(basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
-
-# Create/update memory file
-# Use Write tool with absolute path (not ~)
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+# Append to $PROJECT_ROOT/CLAUDE.md under "## Workflow Learnings" section
 ```
 
-Memory file location: `$HOME/.claude/workflows/memory/<project-slug>.md`
+This ensures learnings are auto-loaded by Claude Code for ALL future sessions.
 
 ### 3. Report Completion
 

@@ -51,22 +51,21 @@ Review the conversation history for:
 
 Based on what you found, choose the appropriate storage:
 
-#### Option A: Project Memory (default)
-For project-specific learnings that help with this codebase.
+#### Option A: Project CLAUDE.md (default)
+For project-specific learnings - auto-loaded by Claude Code for ALL sessions.
 
 ```bash
-# Ensure directory exists
-mkdir -p ~/.claude/workflows/memory
+# Get project root
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 
-# Update or create project memory
-# File: ~/.claude/workflows/memory/<project-slug>.md
+# Append to project's CLAUDE.md under "## Workflow Learnings" section
+# File: $PROJECT_ROOT/CLAUDE.md
 ```
 
-Update the memory file with new learnings in the appropriate section:
-- Key Decisions
+Append learnings under `## Workflow Learnings` with subsections:
 - Patterns Discovered
 - Issues Resolved
-- Conventions Learned
+- Key Decisions
 
 #### Option B: Reusable Skill
 For patterns that apply across multiple projects.
@@ -103,17 +102,19 @@ Create a skill file: `~/.claude/skills/learned/<pattern-name>.md`
 
 ### Step 4: Save Learnings
 
-1. Get the project slug from the current directory:
+1. Get the project root:
    ```bash
-   basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | tr ' ' '-'
+   PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
    ```
 
-2. Read existing memory file if present:
+2. Read existing CLAUDE.md if present:
    ```bash
-   cat ~/.claude/workflows/memory/<project-slug>.md 2>/dev/null || echo "# New memory file"
+   cat "$PROJECT_ROOT/CLAUDE.md" 2>/dev/null || echo "# Project Instructions"
    ```
 
-3. Append new learnings to the appropriate sections
+3. Append new learnings under `## Workflow Learnings` section
+   - If section doesn't exist, create it
+   - Avoid duplicating existing entries
 
 4. For reusable skills, create the skill file in `~/.claude/skills/learned/`
 
@@ -125,7 +126,8 @@ Summarize what was learned:
 ┌─────────────────────────────────────────────────────────┐
 │ LEARNINGS EXTRACTED                                     │
 ├─────────────────────────────────────────────────────────┤
-│ Project Memory Updated: ~/.claude/workflows/memory/X.md │
+│ Project CLAUDE.md Updated: <project>/CLAUDE.md          │
+│ (Auto-loaded by Claude Code for all sessions)           │
 │                                                         │
 │ New Patterns:                                           │
 │ • <pattern 1>                                           │

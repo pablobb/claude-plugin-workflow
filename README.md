@@ -463,55 +463,48 @@ Hooks are written in **Node.js** for full cross-platform compatibility. They gra
 
 The plugin now includes lightweight memory persistence and continuous learning:
 
-### Memory Types (Important Distinction)
+### Where Learnings Are Saved
 
-| Memory Type | Location | Scope | When Loaded |
-|-------------|----------|-------|-------------|
-| **Workflow Memory** | `~/.claude/workflows/memory/<project>.md` | Per-project workflow learnings | At workflow start |
-| **CLAUDE.md** | `~/.claude/CLAUDE.md` or project `.claude/CLAUDE.md` | Global coding conventions | Always (system prompt) |
+| Location | Purpose | Auto-loaded? |
+|----------|---------|--------------|
+| **Project `CLAUDE.md`** | Workflow learnings for this project | ✅ Yes, always |
+| **`~/.claude/CLAUDE.md`** | Your global coding preferences | ✅ Yes, always |
 
-**Workflow Memory** stores:
-- Patterns discovered during workflows
-- Error resolutions specific to the project
-- Key architectural decisions
-- Codebase conventions learned
+When a workflow completes, the completion-guard appends learnings to the **project's root `CLAUDE.md`** under a `## Workflow Learnings` section. This means:
+- Learnings are auto-loaded by Claude Code for ALL sessions (not just workflows)
+- They're shared with your team via git
+- No special workflow commands needed to benefit from past learnings
 
-**CLAUDE.md** stores:
-- Your global coding preferences
-- Framework conventions to follow
-- Naming standards
-- Security practices
+### Project CLAUDE.md (Learnings Section)
 
-Both are valuable but serve different purposes. Workflow memory is automatically managed by the plugin.
-
-### Project Memory
-
-Each project maintains a memory file at `~/.claude/workflows/memory/<project>.md`:
+Workflow learnings are appended to your project's root `CLAUDE.md`:
 
 ```markdown
-# Project Memory: my-app
+# Project: my-app
 
-## Key Decisions
-- Using repository pattern for data access
-- Chose Zod over Yup for validation
+## Team Conventions
+(your existing project instructions)
 
-## Patterns Discovered
+## Workflow Learnings
+
+### Patterns Discovered
 - Barrel exports in each module's index.ts
 - Result<T, E> pattern for error handling
 
-## Issues Resolved
+### Issues Resolved
 - ESLint conflict with Prettier: added eslint-config-prettier
 
-## Conventions Learned
-- API responses wrapped in { data, error, meta }
+### Key Decisions
+- Using repository pattern for data access
+- Chose Zod over Yup for validation
 ```
 
 Memory lifecycle:
-- **Loaded** at workflow start (~1-2k tokens, lightweight)
+- **Auto-loaded** by Claude Code for ALL sessions (not just workflows)
 - **Updated** at workflow completion by completion-guard agent
-- **Preserved** across sessions (persists in filesystem)
+- **Shared** with team via git
 
-The completion-guard agent also moves completed workflows from `active/` to `completed/` directory.
+The completion-guard also moves completed workflows from `active/` to `completed/` directory.
 
 ### Extract Patterns Mid-Session
 
