@@ -621,6 +621,26 @@ If you're getting permission prompts for mkdir or other operations:
 2. **Check settings**: Ensure `additionalDirectories` includes workflow paths
 3. **Restart Claude Code** after changing settings
 
+### Skip all permission prompts (sandbox environments only)
+
+If you want fully autonomous execution without any prompts, you can start Claude Code with:
+
+```bash
+claude --dangerously-skip-permissions
+```
+
+**Warning:** This flag is **not recommended outside of sandbox/container environments**. It skips ALL permission checks, meaning Claude can execute any command without confirmation.
+
+Only use if:
+- You're running in a sandboxed environment (Docker, VM, disposable instance)
+- You have proper backups and version control
+- You accept full responsibility for any changes made
+
+For production development, configure the recommended settings instead:
+```bash
+/workflow:setup
+```
+
 ### State files not being created
 
 1. Run `/workflow:setup` to verify directory structure
