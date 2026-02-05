@@ -62,4 +62,9 @@ Pattern to follow: {pattern_reference}
 - ❌ `python -c "open(...).write(...)"`
 - ❌ `echo "..." > file`
 
+**CRITICAL: Write tool does NOT expand `~`**
+- First run `echo $HOME`, then use absolute paths
+- ❌ `Write(~/.claude/...)` → ERROR
+- ✅ `Write(/home/user/.claude/...)` → SUCCESS
+
 Native tools work cross-platform and respect permissions.

@@ -23,6 +23,30 @@ Select the appropriate agent tier based on the execution mode.
 
 ---
 
+## CRITICAL: Write Tool Path Requirements
+
+**The Write tool does NOT expand `~`** - you MUST use absolute paths!
+
+```
+WRONG: Write(~/.claude/workflows/active/state.org)  → ERROR
+RIGHT: Write(/home/user/.claude/workflows/active/state.org) → SUCCESS
+```
+
+**Before writing to user directories, ALWAYS get $HOME first:**
+
+```bash
+# Step 1: Get HOME path
+echo $HOME
+# Output: /home/zashboy
+
+# Step 2: Use absolute path in Write tool
+Write(/home/zashboy/.claude/workflows/active/state.org)
+```
+
+This applies to ALL file operations in `~/.claude/` directories.
+
+---
+
 ## Agent Tiers
 
 | Tier | Model | Suffix | Use Case |
@@ -184,7 +208,7 @@ prompt: |
     - NO `php -r "file_put_contents(...)"`
     - NO `python -c "open(...).write(...)"`
     - NO `echo "..." > file`
-    - NO `cat << EOF > file`
+  - Write tool does NOT expand ~ - get $HOME first, use absolute paths
 
   ## Instructions
   1. Make the required changes

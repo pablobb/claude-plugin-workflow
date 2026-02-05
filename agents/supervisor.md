@@ -99,6 +99,8 @@ for task in decomposed_tasks:
         - Use Edit tool to modify existing files
         - NEVER use bash commands for file operations
         - NEVER use php -r, python -c, echo > for writing files
+        - Write tool does NOT expand ~ - use absolute paths!
+        - First run `echo $HOME` to get the home directory path
 
         ## Constraints
         - Focus ONLY on your assigned files
