@@ -61,14 +61,27 @@ Batch 2 (parallel - after batch 1):
 
 ## Spawning Pattern
 
+**CRITICAL: Always use `workflow:` prefixed agents** to ensure consistent behavior:
+
+| Agent Type | Subagent Type |
+|------------|---------------|
+| executor-lite | `workflow:executor-lite` |
+| executor | `workflow:executor` |
+| reviewer | `workflow:reviewer` |
+| reviewer-deep | `workflow:reviewer-deep` |
+| security | `workflow:security` |
+| security-deep | `workflow:security-deep` |
+
+**NEVER use built-in agents** like `focused-build` - they may use bash commands for file operations.
+
 Always use `run_in_background=true` for parallel execution:
 
 ```python
-# Spawn parallel executors
+# Spawn parallel executors - ALWAYS use workflow: prefix
 agents = []
 for task in decomposed_tasks:
     agent = Task(
-        subagent_type="workflow:executor",
+        subagent_type="workflow:executor",  # workflow: prefix ensures our agent
         model=task.model,
         run_in_background=true,
         prompt=f"""
@@ -80,6 +93,12 @@ for task in decomposed_tasks:
 
         ## Codebase Context
         {codebase_context}
+
+        ## CRITICAL: Tool Usage
+        - Use Write tool to create new files
+        - Use Edit tool to modify existing files
+        - NEVER use bash commands for file operations
+        - NEVER use php -r, python -c, echo > for writing files
 
         ## Constraints
         - Focus ONLY on your assigned files

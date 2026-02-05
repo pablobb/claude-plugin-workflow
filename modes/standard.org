@@ -9,14 +9,18 @@ Uses sonnet model for most tasks with single-pass code review.
 
 * Agent Routing
 
-| Phase | Agent | Model | Purpose |
-|-------|-------|-------|---------|
-| Codebase Analysis | codebase-analyzer | sonnet | Extract conventions and patterns |
-| Planning | Plan | sonnet | Built-in planning agent |
-| Implementation | focused-build | sonnet | Built-in implementation agent |
-| Code Review | reviewer | sonnet | Standard code review |
-| Security | security | sonnet | Standard security audit |
-| Tests | test-writer | sonnet | Test generation |
+*CRITICAL: Always use =workflow:= prefixed agents to ensure native tool usage*
+
+| Phase | Subagent Type | Model | Purpose |
+|-------|---------------|-------|---------|
+| Codebase Analysis | workflow:codebase-analyzer | sonnet | Extract conventions and patterns |
+| Planning | Plan | sonnet | Built-in planning agent (read-only) |
+| Implementation | workflow:executor | sonnet | Standard implementation with native tools |
+| Code Review | workflow:reviewer | sonnet | Standard code review |
+| Security | workflow:security | sonnet | Standard security audit |
+| Tests | workflow:test-writer | sonnet | Test generation |
+
+*NEVER use =focused-build= or other built-in implementation agents - they may use bash for file ops*
 
 * Review Chain
 
@@ -54,9 +58,10 @@ Reviews can run in parallel on first pass:
 - Explore codebase before planning
 
 ** Implementation
-- Use focused-build agent
+- Use workflow:executor agent (NOT focused-build)
 - Follow plan strictly
 - Minimal deviation allowed
+- Always use Write/Edit tools, never bash for file ops
 
 ** Review
 - Single code review pass

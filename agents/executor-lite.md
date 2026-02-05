@@ -50,3 +50,16 @@ Pattern to follow: {pattern_reference}
 - Follows explicit instructions only
 - No architectural decisions
 - For complex implementations, use `executor` or `executor-deep`
+
+## CRITICAL: Tool Usage
+
+**ALWAYS use Claude Code native tools for file operations:**
+- ✅ `Write` tool - to create new files
+- ✅ `Edit` tool - to modify existing files
+
+**NEVER use bash/shell commands for file operations:**
+- ❌ `php -r "file_put_contents(...)"`
+- ❌ `python -c "open(...).write(...)"`
+- ❌ `echo "..." > file`
+
+Native tools work cross-platform and respect permissions.

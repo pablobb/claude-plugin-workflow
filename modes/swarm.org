@@ -16,19 +16,23 @@ Swarm mode enables aggressive parallel execution with competitive 3-architect va
 
 ** Agent Routing
 
-| Phase               | Agent                  | Model  | Parallel |
-|---------------------+------------------------+--------+----------|
-| Task Analysis       | task-analyzer          | haiku  | no       |
-| Codebase Analysis   | codebase-analyzer      | sonnet | no       |
-| Orchestration       | supervisor             | sonnet | no       |
-| Planning            | architect              | opus   | no       |
-| Decomposition       | supervisor             | sonnet | no       |
-| Implementation      | executor (multiple)    | sonnet | YES (4)  |
-| Code Review         | reviewer-deep          | opus   | YES (3)  |
-| Security Review     | security-deep          | opus   | YES (3)  |
-| Quality Review      | reviewer-deep          | opus   | YES (3)  |
-| Quality Gate        | quality-gate           | sonnet | no       |
-| Completion Guard    | completion-guard       | opus   | no       |
+*CRITICAL: Always use =workflow:= prefixed agents to ensure native tool usage*
+
+| Phase               | Subagent Type               | Model  | Parallel |
+|---------------------+-----------------------------+--------+----------|
+| Task Analysis       | workflow:explorer           | haiku  | no       |
+| Codebase Analysis   | workflow:codebase-analyzer  | sonnet | no       |
+| Orchestration       | workflow:supervisor         | sonnet | no       |
+| Planning            | workflow:architect          | opus   | no       |
+| Decomposition       | workflow:supervisor         | sonnet | no       |
+| Implementation      | workflow:executor (multiple)| sonnet | YES (4)  |
+| Code Review         | workflow:reviewer-deep      | opus   | YES (3)  |
+| Security Review     | workflow:security-deep      | opus   | YES (3)  |
+| Quality Review      | workflow:reviewer-deep      | opus   | YES (3)  |
+| Quality Gate        | workflow:reviewer           | sonnet | no       |
+| Completion Guard    | workflow:reviewer-deep      | opus   | no       |
+
+*NEVER use built-in agents without the =workflow:= prefix - they may use bash for file ops*
 
 ** Parallel Execution Strategy
 

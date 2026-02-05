@@ -3,6 +3,26 @@
 Use these templates when invoking subagents. Customize with actual values.
 Select the appropriate agent tier based on the execution mode.
 
+## CRITICAL: Use Workflow Agents Only
+
+**ALWAYS use `workflow:` prefixed agents** to ensure they use native tools (Write/Edit) instead of bash commands for file operations.
+
+| Instead of | Use |
+|------------|-----|
+| `executor-lite` | `workflow:executor-lite` |
+| `focused-build` | `workflow:executor` |
+| `executor` | `workflow:executor` |
+| `reviewer` | `workflow:reviewer` |
+| `reviewer-deep` | `workflow:reviewer-deep` |
+| `security` | `workflow:security` |
+| `security-deep` | `workflow:security-deep` |
+| `test-writer` | `workflow:test-writer` |
+| `doc-writer` | `workflow:doc-writer` |
+
+**NEVER use built-in agents** (without `workflow:` prefix) for implementation tasks - they may use bash commands (php -r, python -c, echo >) for file operations instead of native Write/Edit tools.
+
+---
+
 ## Agent Tiers
 
 | Tier | Model | Suffix | Use Case |
@@ -29,6 +49,11 @@ prompt: |
   ## Project Root
   {project_root}
 
+  ## CRITICAL: Tool Usage
+  - Use `Write` tool to save the context document
+  - NEVER use bash commands for file operations
+  - Get $HOME first, then use absolute paths (Write doesn't expand ~)
+
   ## Analysis Scope
   1. Stack Detection - Languages, frameworks, tools
   2. Project Structure - Directory layout, entry points
@@ -40,7 +65,7 @@ prompt: |
   8. Documentation Style - Docblocks, comments
 
   ## Output
-  Save context document to: ~/.claude/workflows/context/{project-slug}.md
+  Save context document to: $HOME/.claude/workflows/context/{project-slug}.md
 
   This context will be injected into all subsequent agent prompts
   to ensure consistency with established patterns.
@@ -152,6 +177,15 @@ prompt: |
   ## Files
   {file_list}
 
+  ## CRITICAL: Tool Usage
+  - Use `Write` tool to CREATE new files
+  - Use `Edit` tool to MODIFY existing files
+  - NEVER use bash commands for file operations:
+    - NO `php -r "file_put_contents(...)"`
+    - NO `python -c "open(...).write(...)"`
+    - NO `echo "..." > file`
+    - NO `cat << EOF > file`
+
   ## Instructions
   1. Make the required changes
   2. Follow existing code style
@@ -173,6 +207,17 @@ prompt: |
   ## Context
   Workflow ID: {workflow_id}
   Previous phase: Planning (completed)
+
+  ## CRITICAL: Tool Usage
+  - Use `Write` tool to CREATE new files
+  - Use `Edit` tool to MODIFY existing files
+  - Use `Read` tool to read file contents
+  - NEVER use bash commands for file operations:
+    - NO `php -r "file_put_contents(...)"`
+    - NO `python -c "open(...).write(...)"`
+    - NO `echo "..." > file`
+    - NO `cat << EOF > file`
+  Native tools work cross-platform and respect permissions.
 
   ## Instructions
   1. Read the plan file thoroughly
@@ -202,6 +247,17 @@ prompt: |
   ## Context
   Workflow ID: {workflow_id}
   Previous phase: Planning (completed)
+
+  ## CRITICAL: Tool Usage
+  - Use `Write` tool to CREATE new files
+  - Use `Edit` tool to MODIFY existing files
+  - Use `Read` tool to read file contents
+  - NEVER use bash commands for file operations:
+    - NO `php -r "file_put_contents(...)"`
+    - NO `python -c "open(...).write(...)"`
+    - NO `echo "..." > file`
+    - NO `cat << EOF > file`
+  Native tools work cross-platform and respect permissions.
 
   ## Instructions
   1. Read the plan file thoroughly
@@ -463,6 +519,14 @@ prompt: |
   Implementation files: {changed_files_list}
   Existing test patterns: {test_directory}
 
+  ## CRITICAL: Tool Usage
+  - Use `Write` tool to CREATE new test files
+  - Use `Edit` tool to MODIFY existing test files
+  - NEVER use bash commands for file operations:
+    - NO `php -r "file_put_contents(...)"`
+    - NO `python -c "open(...).write(...)"`
+    - NO `echo "..." > file`
+
   ## Requirements
   1. Follow existing test patterns in the project
   2. Cover happy path scenarios
@@ -561,6 +625,11 @@ prompt: |
   ## Context
   Workflow ID: {workflow_id}
   Changed files: {changed_files_list}
+
+  ## CRITICAL: Tool Usage
+  - Use `Write` tool to CREATE new documentation files
+  - Use `Edit` tool to MODIFY existing documentation
+  - NEVER use bash commands for file operations
 
   ## Scope
   1. Identify affected documentation

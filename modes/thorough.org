@@ -10,16 +10,20 @@ security-sensitive code, and production releases.
 
 * Agent Routing
 
-| Phase | Agent | Model | Purpose |
-|-------|-------|-------|---------|
-| Codebase Analysis | codebase-analyzer | sonnet | Extract conventions (always regenerate) |
-| Planning | architect | opus | Deep architectural analysis |
-| Implementation | executor | sonnet | Careful implementation |
-| Code Review | reviewer-deep | opus | Comprehensive review |
-| Security | security-deep | opus | Deep security audit |
-| Tests | test-writer | sonnet | Full test coverage |
-| Performance | perf-reviewer | sonnet | Performance analysis |
-| Documentation | doc-writer | haiku | Documentation updates |
+*CRITICAL: Always use =workflow:= prefixed agents to ensure native tool usage*
+
+| Phase | Subagent Type | Model | Purpose |
+|-------|---------------|-------|---------|
+| Codebase Analysis | workflow:codebase-analyzer | sonnet | Extract conventions (always regenerate) |
+| Planning | workflow:architect | opus | Deep architectural analysis |
+| Implementation | workflow:executor | sonnet | Careful implementation |
+| Code Review | workflow:reviewer-deep | opus | Comprehensive review |
+| Security | workflow:security-deep | opus | Deep security audit |
+| Tests | workflow:test-writer | sonnet | Full test coverage |
+| Performance | workflow:perf-reviewer | sonnet | Performance analysis |
+| Documentation | workflow:doc-writer | haiku | Documentation updates |
+
+*NEVER use built-in agents without =workflow:= prefix - they may use bash for file ops*
 
 * Review Chain
 

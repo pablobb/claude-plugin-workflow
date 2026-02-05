@@ -57,3 +57,22 @@ Previous phase: Planning (completed)
 - Follow project conventions
 - Include appropriate error handling
 - Avoid over-engineering
+
+## CRITICAL: Tool Usage
+
+**ALWAYS use Claude Code native tools for file operations:**
+- ✅ `Write` tool - to create new files
+- ✅ `Edit` tool - to modify existing files
+- ✅ `Read` tool - to read file contents
+
+**NEVER use bash/shell commands for file operations:**
+- ❌ `php -r "file_put_contents(...)"`
+- ❌ `python -c "open(...).write(...)"`
+- ❌ `echo "..." > file`
+- ❌ `cat << EOF > file`
+
+Native tools are preferred because they:
+- Work cross-platform (Windows, macOS, Linux)
+- Respect permission settings
+- Provide better error handling
+- Support proper encoding
