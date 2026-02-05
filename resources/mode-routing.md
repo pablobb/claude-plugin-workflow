@@ -37,10 +37,10 @@ Context file: `~/.claude/workflows/context/<project-slug>.md`
 
 | Mode | Agent | Model | Approach |
 |------|-------|-------|----------|
-| standard | focused-build (built-in) | sonnet | Balanced |
-| turbo | executor-lite | haiku | Fast, direct |
-| eco | executor-lite | haiku | Minimal |
-| thorough | executor | sonnet | Careful |
+| standard | workflow:executor | sonnet | Balanced |
+| turbo | workflow:executor-lite | haiku | Fast, direct |
+| eco | workflow:executor-lite | haiku | Minimal |
+| thorough | workflow:executor | sonnet | Careful |
 
 ### Code Review Phase
 

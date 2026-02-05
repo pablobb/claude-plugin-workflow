@@ -85,7 +85,7 @@
 
 ** TODO Step 2: Implementation
 :PROPERTIES:
-:AGENT: focused-build
+:AGENT: workflow:executor
 :STATUS: pending
 :STARTED_AT:
 :COMPLETED_AT:

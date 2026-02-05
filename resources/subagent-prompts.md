@@ -220,10 +220,14 @@ prompt: |
   - Brief description of changes
 ```
 
-### focused-build (sonnet) - Built-in
+### focused-build (sonnet) - DEPRECATED
+
+> **⚠️ DO NOT USE** - Use `workflow:executor` instead.
+> This prompt is kept for reference only. The built-in focused-build agent
+> may use bash commands for file operations instead of native Write/Edit tools.
 
 ```
-subagent_type: focused-build
+subagent_type: workflow:executor  # NOT focused-build
 prompt: |
   ## Task
   Implement the following plan: {plan_file_path}

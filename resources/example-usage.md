@@ -29,14 +29,14 @@
    - Supervisor validates plan has actionable steps
 
 3. **Implementation Phase:**
-   - Supervisor spawns `focused-build` agent
-   - Agent follows plan, modifies/creates files
+   - Supervisor spawns `workflow:executor` agent
+   - Agent follows plan, modifies/creates files using native Write/Edit tools
    - Reports changes made
 
 4. **Code Review Phase:**
-   - Supervisor spawns `review` agent
+   - Supervisor spawns `workflow:reviewer` agent
    - Agent checks implementation against plan
-   - If FAIL: Supervisor sends feedback to `focused-build`, loops
+   - If FAIL: Supervisor sends feedback to `workflow:executor`, loops
    - If PASS: Proceeds
 
 5. **Security Review Phase:**

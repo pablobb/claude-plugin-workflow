@@ -312,7 +312,7 @@ Use the correct agent based on the mode:
 | **Orchestration** | - | - | - | - | supervisor |
 | Planning | Plan | architect-lite | architect-lite | architect | architect (opus) |
 | **Decomposition** | - | - | - | - | supervisor |
-| Implementation | focused-build | executor-lite | executor-lite | executor | executor ×4 (parallel) |
+| Implementation | workflow:executor | workflow:executor-lite | workflow:executor-lite | workflow:executor | workflow:executor ×4 (parallel) |
 | Code Review | reviewer | reviewer-lite | reviewer-lite | reviewer-deep | reviewer-deep ×3 |
 | Security | security | security-lite | security-lite | security-deep | security-deep (parallel) |
 | Quality Review | - | - | - | - | reviewer-deep (parallel) |
