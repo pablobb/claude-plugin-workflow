@@ -70,12 +70,7 @@ Append learnings under `## Workflow Learnings` with subsections:
 #### Option B: Reusable Skill
 For patterns that apply across multiple projects.
 
-```bash
-# Only for highly reusable patterns
-mkdir -p ~/.claude/skills/learned
-```
-
-Create a skill file: `~/.claude/skills/learned/<pattern-name>.md`
+Create a skill file at `<HOME>/.claude/skills/learned/<pattern-name>.md` (resolve `<HOME>` via `echo $HOME`).
 
 ```markdown
 # <Pattern Name>
@@ -116,7 +111,7 @@ Create a skill file: `~/.claude/skills/learned/<pattern-name>.md`
    - If section doesn't exist, create it
    - Avoid duplicating existing entries
 
-4. For reusable skills, create the skill file in `~/.claude/skills/learned/`
+4. For reusable skills, create the skill file using Write tool with absolute path (never `~`)
 
 ### Step 5: Report
 

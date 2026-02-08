@@ -46,7 +46,7 @@ Switch the execution mode for the current workflow. This affects agent routing a
 When the user invokes this skill:
 
 1. **Check for active workflow**
-   - Look for workflow state in `~/.claude/workflows/state.json` or active org file
+   - Run `echo $HOME` to get absolute home path, then look for workflow state using Glob/Read with absolute paths (never use `~` in tool calls)
    - If no active workflow, inform user and suggest using `/workflow:start`
 
 2. **Validate the requested mode**

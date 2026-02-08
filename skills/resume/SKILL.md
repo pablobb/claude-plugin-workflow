@@ -18,12 +18,18 @@ You are the **supervisor agent** resuming a workflow.
 
 ### 1. Find the Workflow
 
+First, get the absolute home path:
 ```bash
-# If workflow_id provided, use it; otherwise find most recent
-WORKFLOW_DIR="$HOME/.claude/workflows/active"
+echo $HOME
 ```
 
-- If `$ARGUMENTS` is empty: Find most recent `.org` file in `~/.claude/workflows/active/`
+Then find the workflow file. **Never use `~` in tool calls** - always use the absolute path:
+```
+Glob(pattern="<HOME>/.claude/workflows/active/*")
+```
+(Replace `<HOME>` with the actual path, e.g., `/home/zashboy`)
+
+- If `$ARGUMENTS` is empty: Find most recent `.org` or `.md` file in the active directory
 - If `$ARGUMENTS` provided: Look for matching workflow ID
 
 ### 2. Read and Parse the Org File

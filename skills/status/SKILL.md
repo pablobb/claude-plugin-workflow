@@ -18,10 +18,16 @@ $ARGUMENTS
 
 If no `$ARGUMENTS` provided, list all active workflows.
 
-**Use Glob tool** (preferred over bash):
+**First, get the home directory path:**
+```bash
+echo $HOME
 ```
-Glob(pattern="~/.claude/workflows/active/*")
+
+**Then use Glob tool with the ABSOLUTE path** (never use `~` in tool calls):
 ```
+Glob(pattern="<HOME>/.claude/workflows/active/*")
+```
+(Replace `<HOME>` with the actual path, e.g., `/home/zashboy/.claude/workflows/active/*`)
 
 This finds both `.org` and `.md` workflow files.
 
@@ -65,7 +71,7 @@ Steps:
 
 Current: Code Review (iteration 2, found 3 issues)
 
-State file: ~/.claude/workflows/active/<id>.<format>
+State file: <HOME>/.claude/workflows/active/<id>.<format>
 ```
 
 ### 3. Show Recent Completed
@@ -73,8 +79,9 @@ State file: ~/.claude/workflows/active/<id>.<format>
 If `$ARGUMENTS` is "completed" or "history":
 
 ```
-Glob(pattern="~/.claude/workflows/completed/*")
+Glob(pattern="<HOME>/.claude/workflows/completed/*")
 ```
+(Replace `<HOME>` with the actual absolute path)
 
 Show last 5 completed workflows with their summaries.
 

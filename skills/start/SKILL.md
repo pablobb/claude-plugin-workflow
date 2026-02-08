@@ -10,14 +10,16 @@ This workflow runs in **fully autonomous agentic mode**. Do NOT ask for permissi
 > Without this, bash commands will prompt for permission and break autonomous execution.
 > Run `/workflow:setup` or copy settings: `cp ~/.claude/plugins/workflow/resources/recommended-settings.json .claude/settings.local.json`
 
-### Preferred: Use Native Tools for File Operations
+### CRITICAL: Never Use `~` in Tool Calls
 
-Prefer native Claude Code tools for file operations (more reliable cross-platform):
-- `Glob(pattern="<absolute-path>/*")` - to list files
-- `Read(file_path="<absolute-path>/file.md")` - to read files
-- `Write(file_path="<absolute-path>/file.md", content=...)` - to create files/directories
+The Write, Read, Glob, and Edit tools do NOT expand `~`. You MUST run `echo $HOME` first and use the absolute path in ALL tool calls.
 
-Bash commands also work when `Bash(*)` is in the project's permission allow list (see `resources/recommended-settings.json`).
+- ❌ `Write(file_path="~/.claude/workflows/...")` → **WILL FAIL**
+- ❌ `Glob(pattern="~/.claude/workflows/*")` → **WILL FAIL**
+- ❌ `Read(file_path="~/.claude/workflows/...")` → **WILL FAIL**
+- ✅ `Write(file_path="/home/zashboy/.claude/workflows/...")` → WORKS
+
+**Wherever this document references `~/.claude/...` paths, you MUST substitute the actual absolute home path.**
 
 ### Permission Model
 
@@ -332,7 +334,7 @@ Task(
 All agents receive the codebase context to ensure consistency:
 
 ```
-Context file: ~/.claude/workflows/context/<project-slug>.md
+Context file: <HOME>/.claude/workflows/context/<project-slug>.md
 
 Include in every agent prompt:
 ---
@@ -687,7 +689,7 @@ If user types anything during the workflow:
 
 When `--style=light` is used:
 
-1. Use `~/.claude/workflows/state.json` instead of org files
+1. Use `<HOME>/.claude/workflows/state.json` instead of org files
 2. Use TodoWrite tool for step tracking
 3. Skip org file creation
 4. State structure:
@@ -759,13 +761,15 @@ If a subagent fails or returns unexpected results:
 
 - Mode configs: `modes/` in plugin directory
 - Templates: `templates/` in plugin directory (both `.org` and `.md` formats)
-- **Active state files**: `~/.claude/workflows/active/<id>.org` or `<id>.md`
-- JSON state (light style): `~/.claude/workflows/state.json`
-- Completed: `~/.claude/workflows/completed/`
-- Codebase context: `~/.claude/workflows/context/`
-- **Project memory**: `~/.claude/workflows/memory/`
-- Learned skills: `~/.claude/skills/learned/`
-- Hook logs: `~/.claude/workflows/hook.log`
+- **Active state files**: `<HOME>/.claude/workflows/active/<id>.org` or `<id>.md`
+- JSON state (light style): `<HOME>/.claude/workflows/state.json`
+- Completed: `<HOME>/.claude/workflows/completed/`
+- Codebase context: `<HOME>/.claude/workflows/context/`
+- **Project memory**: `<HOME>/.claude/workflows/memory/`
+- Learned skills: `<HOME>/.claude/skills/learned/`
+- Hook logs: `<HOME>/.claude/workflows/hook.log`
+
+**Note:** `<HOME>` = absolute home path from `echo $HOME`. Never use `~` in tool calls.
 
 ### File Format Reference
 
