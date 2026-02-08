@@ -75,16 +75,23 @@ The `additionalDirectories` setting grants access to paths outside the project d
 ```json
 {
   "permissions": {
+    "defaultMode": "acceptEdits",
     "allow": [
       "Read", "Write", "Edit", "Glob", "Grep", "Task", "TodoWrite",
-      "Bash(git status)", "Bash(git diff *)", "Bash(git add *)",
-      "Bash(git checkout -b *)", "Bash(git switch -c *)",
-      "Bash(npm run *)", "Bash(npm test *)",
-      "Bash(composer *)", "Bash(php -l *)"
+      "Bash(*)"
+    ],
+    "ask": [
+      "Bash(git push *)", "Bash(rm *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)", "Bash(git reset --hard *)",
+      "Bash(git push --force *)", "Bash(sudo *)"
     ]
   }
 }
 ```
+
+**How it works:** `Bash(*)` allows all bash commands. Rules evaluate: `deny > ask > allow`, so dangerous commands are still blocked and sensitive ones still prompt.
 
 ### Step 4: Show Status
 
@@ -175,7 +182,7 @@ After making changes, verify:
 
 ### Important Notes
 
-- **Use Write tool for directory creation** (avoids bash permission prompts)
+- **Use Write tool for directory creation** (cross-platform, auto-creates parents)
 - Always preserve existing permissions
 - Don't duplicate entries
 - Use proper JSON formatting
@@ -185,8 +192,8 @@ After making changes, verify:
 ### Troubleshooting
 
 **Issue: Permission prompts during workflows**
+- Ensure `Bash(*)` is in the `allow` list (allows all bash commands)
 - Ensure `additionalDirectories` includes all workflow paths
-- Ensure relevant Bash commands are in `allow` list
 - Restart Claude Code after settings changes
 
 **Issue: State files not being created**

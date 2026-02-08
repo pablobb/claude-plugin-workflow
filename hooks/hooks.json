@@ -12,18 +12,6 @@
           }
         ]
       }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/permission-check.js\"",
-            "timeout": 10
-          }
-        ]
-      }
     ]
   }
 }

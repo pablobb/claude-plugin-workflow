@@ -89,6 +89,6 @@ Show all workflows including:
 
 ### Important Notes
 
-- **Use Glob and Read tools** instead of bash ls/cat to avoid permission issues
+- **Prefer Glob and Read tools** over bash ls/cat for cross-platform reliability
 - Support both `.org` and `.md` formats
 - Parse format-specific syntax (org properties vs markdown headers)

@@ -450,7 +450,7 @@ COMPLETE
 
 ## Hooks
 
-The plugin includes automated hooks (enabled by default, **cross-platform**):
+The plugin includes automated validation hooks (enabled by default, **cross-platform**):
 
 | Hook | Trigger | Platforms |
 |------|---------|-----------|
@@ -458,7 +458,6 @@ The plugin includes automated hooks (enabled by default, **cross-platform**):
 | PHP syntax check | After `.php` edits | Windows, macOS, Linux |
 | Python syntax check | After `.py` edits | Windows, macOS, Linux |
 | JSON validation | After `.json` writes | Windows, macOS, Linux |
-| Permission check | Before Bash commands | Windows, macOS, Linux |
 
 Hooks are written in **Node.js** for full cross-platform compatibility. They gracefully skip validation if the required tool (php, python, etc.) is not installed.
 
@@ -650,31 +649,13 @@ See `resources/multi-instance-parallelism.md` for the full guide.
 
 ### Permission prompts during workflows
 
-If you're getting permission prompts for mkdir or other operations:
+If you're getting permission prompts for bash commands:
 
-1. **Run setup**: `/workflow:setup` to initialize directories
-2. **Check settings**: Ensure `additionalDirectories` includes workflow paths
-3. **Restart Claude Code** after changing settings
-
-### Skip all permission prompts (sandbox environments only)
-
-If you want fully autonomous execution without any prompts, you can start Claude Code with:
-
-```bash
-claude --dangerously-skip-permissions
-```
-
-**Warning:** This flag is **not recommended outside of sandbox/container environments**. It skips ALL permission checks, meaning Claude can execute any command without confirmation.
-
-Only use if:
-- You're running in a sandboxed environment (Docker, VM, disposable instance)
-- You have proper backups and version control
-- You accept full responsibility for any changes made
-
-For production development, configure the recommended settings instead:
-```bash
-/workflow:setup
-```
+1. **Ensure `Bash(*)` is in your allow list** - This allows all bash commands. Individual command whitelisting doesn't work for piped/complex commands.
+2. **Check deny/ask rules** - Rules evaluate: `deny > ask > allow`. Dangerous commands in `deny` are always blocked regardless of `Bash(*)`.
+3. **Check `additionalDirectories`** - Ensure `~/.claude/workflows` and `~/.claude/plans` are listed.
+4. **Restart Claude Code** after changing settings.
+5. **Run setup**: `/workflow:setup` to verify configuration.
 
 ### State files not being created
 
@@ -734,20 +715,20 @@ Or manually add to your `.claude/settings.json`:
     ],
     "allow": [
       "Read", "Write", "Edit", "Glob", "Grep", "Task", "TodoWrite",
-      "Bash(mkdir -p ~/.claude/workflows)", "Bash(mkdir -p ~/.claude/plans)",
-      "Bash(git status)", "Bash(git diff *)", "Bash(git add *)",
-      "Bash(git checkout -b *)", "Bash(npm run *)", "Bash(npm test *)",
-      "Bash(composer *)", "Bash(php -l *)", "Bash(python -m pytest *)"
+      "Bash(*)"
     ],
     "ask": [
-      "Bash(git commit *)", "Bash(git push *)", "Bash(rm *)"
+      "Bash(git push *)", "Bash(rm *)"
     ],
     "deny": [
-      "Bash(rm -rf *)", "Bash(git reset --hard *)", "Bash(git push --force *)"
+      "Bash(rm -rf *)", "Bash(git reset --hard *)",
+      "Bash(git push --force *)", "Bash(sudo *)"
     ]
   }
 }
 ```
+
+**How it works:** Rules evaluate in order: `deny > ask > allow`. `Bash(*)` allows all bash commands except those matched by `deny` (always blocked) or `ask` (prompts for confirmation). This eliminates permission prompts for piped commands, complex shell operations, and any tool invocations within the project.
 
 **Important:** The `additionalDirectories` setting grants Claude Code access to workflow state directories outside your project.
 

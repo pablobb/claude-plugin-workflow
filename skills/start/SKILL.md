@@ -10,19 +10,14 @@ This workflow runs in **fully autonomous agentic mode**. Do NOT ask for permissi
 > See `resources/recommended-settings.json` or run:
 > `cp ~/.claude/plugins/workflow/resources/recommended-settings.json .claude/settings.local.json`
 
-### CRITICAL: Use Native Tools, NOT Bash for File Operations
+### Preferred: Use Native Tools for File Operations
 
-**NEVER use bash commands for file operations in `~/.claude/` directories:**
-- ❌ `ls -la ~/.claude/workflows/...` - will prompt for permission
-- ❌ `cat ~/.claude/workflows/...` - will prompt for permission
-- ❌ `mkdir ~/.claude/...` - will prompt for permission
+Prefer native Claude Code tools for file operations (more reliable cross-platform):
+- `Glob(pattern="<absolute-path>/*")` - to list files
+- `Read(file_path="<absolute-path>/file.md")` - to read files
+- `Write(file_path="<absolute-path>/file.md", content=...)` - to create files/directories
 
-**ALWAYS use native Claude Code tools:**
-- ✅ `Glob(pattern="<absolute-path>/*")` - to list files
-- ✅ `Read(file_path="<absolute-path>/file.md")` - to read files
-- ✅ `Write(file_path="<absolute-path>/file.md", content=...)` - to create files/directories
-
-The native tools respect `additionalDirectories` settings. Bash commands do not.
+Bash commands also work when `Bash(*)` is in the project's permission allow list (see `resources/recommended-settings.json`).
 
 ### Permission Model
 
@@ -172,7 +167,7 @@ Write(file_path="/home/user/.claude/plans/.gitkeep", content="")
 - Write tool creates parent directories automatically
 
 **Why this matters:**
-- Avoids permission prompts during workflow
+- Write tool does not expand `~` so absolute paths are required
 - Ensures state files can be created
 - Cross-platform compatible
 
@@ -276,18 +271,18 @@ If directories cannot be created, **STOP** and inform the user to run `/workflow
    **IMPORTANT:**
    - The Write tool does NOT expand `~` - always use full absolute paths
    - Get home directory in Step 0a and reuse it
-   - This ensures no permission prompts and cross-platform operation
+   - Write tool does not expand `~` so absolute paths are required
 
 6. **Run Codebase Analysis** (unless eco mode or context is fresh):
    - **Use Read tool** to check if context file exists: `<HOME>/.claude/workflows/context/<project-slug>.md`
-   - **NEVER use bash ls** - use Read or Glob tools only
+   - Prefer Read or Glob tools for cross-platform reliability
    - If file doesn't exist or is older than 7 days, run `codebase-analyzer` agent
    - Store context file for all subsequent agents to reference
    - In eco mode, skip analysis to save tokens (use existing context if available)
 
 7. **Load Project Memory** (lightweight, always run):
    - **Use Read tool** to check for memory file: `<HOME>/.claude/workflows/memory/<project-slug>.md`
-   - **NEVER use bash ls or cat** - always use Read tool
+   - Prefer Read tool for cross-platform reliability
    - If exists, read key learnings to inform this workflow:
      - Key decisions from past workflows
      - Patterns discovered in this codebase
