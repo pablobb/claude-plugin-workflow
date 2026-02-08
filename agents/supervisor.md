@@ -84,7 +84,7 @@ Batch 2 (parallel - after batch 1):
 | security | `workflow:security` |
 | security-deep | `workflow:security-deep` |
 
-**NEVER use built-in agents** like `focused-build` - they may use bash commands for file operations.
+**ALWAYS use `workflow:` prefixed agents** for all tasks except the built-in `Plan` agent.
 
 Always use `run_in_background=true` for parallel execution:
 

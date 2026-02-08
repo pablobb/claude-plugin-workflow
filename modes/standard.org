@@ -20,7 +20,7 @@ Uses sonnet model for most tasks with single-pass code review.
 | Security | workflow:security | sonnet | Standard security audit |
 | Tests | workflow:test-writer | sonnet | Test generation |
 
-*NEVER use =focused-build= or other built-in implementation agents - they may use bash for file ops*
+*Always use =workflow:= prefixed agents for all tasks except the built-in =Plan= agent*
 
 * Review Chain
 
@@ -58,7 +58,7 @@ Reviews can run in parallel on first pass:
 - Explore codebase before planning
 
 ** Implementation
-- Use workflow:executor agent (NOT focused-build)
+- Use workflow:executor agent
 - Follow plan strictly
 - Minimal deviation allowed
 - Always use Write/Edit tools, never bash for file ops

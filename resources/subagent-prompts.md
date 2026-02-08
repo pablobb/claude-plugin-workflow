@@ -7,19 +7,7 @@ Select the appropriate agent tier based on the execution mode.
 
 **ALWAYS use `workflow:` prefixed agents** to ensure they use native tools (Write/Edit) instead of bash commands for file operations.
 
-| Instead of | Use |
-|------------|-----|
-| `executor-lite` | `workflow:executor-lite` |
-| `focused-build` | `workflow:executor` |
-| `executor` | `workflow:executor` |
-| `reviewer` | `workflow:reviewer` |
-| `reviewer-deep` | `workflow:reviewer-deep` |
-| `security` | `workflow:security` |
-| `security-deep` | `workflow:security-deep` |
-| `test-writer` | `workflow:test-writer` |
-| `doc-writer` | `workflow:doc-writer` |
-
-**NEVER use built-in agents** (without `workflow:` prefix) for implementation tasks - they may use bash commands (php -r, python -c, echo >) for file operations instead of native Write/Edit tools.
+All custom workflow agents must use the `workflow:` prefix (e.g., `workflow:executor`, `workflow:reviewer`, `workflow:security`). The only exception is the built-in `Plan` agent which is read-only.
 
 ---
 
@@ -64,7 +52,7 @@ This applies to ALL file operations in `~/.claude/` directories.
 Runs **before planning** to extract conventions and best practices.
 
 ```
-subagent_type: codebase-analyzer
+subagent_type: workflow:codebase-analyzer
 model: sonnet
 prompt: |
   ## Task
@@ -112,7 +100,7 @@ prompt: |
 ### architect-lite (haiku)
 
 ```
-subagent_type: architect-lite
+subagent_type: workflow:architect-lite
 model: haiku
 prompt: |
   ## Task
@@ -158,7 +146,7 @@ prompt: |
 ### architect (opus)
 
 ```
-subagent_type: architect
+subagent_type: workflow:architect
 model: opus
 prompt: |
   ## Task
@@ -192,7 +180,7 @@ prompt: |
 ### executor-lite (haiku)
 
 ```
-subagent_type: executor-lite
+subagent_type: workflow:executor-lite
 model: haiku
 prompt: |
   ## Task
@@ -225,61 +213,10 @@ prompt: |
   - Brief description of changes
 ```
 
-### focused-build (sonnet) - DEPRECATED
-
-> **⚠️ DO NOT USE** - Use `workflow:executor` instead.
-> This prompt is kept for reference only. The built-in focused-build agent
-> may use bash commands for file operations instead of native Write/Edit tools.
-
-```
-subagent_type: workflow:executor  # NOT focused-build
-prompt: |
-  ## Task
-  Implement the following plan: {plan_file_path}
-
-  ## Context
-  Workflow ID: {workflow_id}
-  Previous phase: Planning (completed)
-
-  ## CRITICAL: Tool Usage
-  - Use `Write` tool to CREATE new files
-  - Use `Edit` tool to MODIFY existing files
-  - Use `Read` tool to read file contents
-  - NEVER use bash commands for file operations:
-    - NO `php -r "file_put_contents(...)"`
-    - NO `python -c "open(...).write(...)"`
-    - NO `echo "..." > file`
-    - NO `cat << EOF > file`
-  Native tools work cross-platform and respect permissions.
-
-  ## Skill Loading (Optional)
-  If codebase context lists "Recommended Skills", load them first:
-  ```
-  Skill(skill: "{skill-name}")
-  ```
-  Continue without skills if not installed.
-
-  ## Instructions
-  1. Read the plan file thoroughly
-  2. Load recommended skills from codebase context (if available)
-  3. Implement each step in order
-  4. Follow existing code patterns in the codebase
-  5. Do not add unnecessary features or abstractions
-  6. Focus on clean, working code
-
-  ## Previous Review Feedback (if any)
-  {review_feedback}
-
-  ## Output
-  - Implement all changes
-  - Report which files were modified/created
-  - Note any deviations from the plan with justification
-```
-
 ### executor (sonnet)
 
 ```
-subagent_type: executor
+subagent_type: workflow:executor
 model: sonnet
 prompt: |
   ## Task
@@ -332,7 +269,7 @@ prompt: |
 ### reviewer-lite (haiku)
 
 ```
-subagent_type: reviewer-lite
+subagent_type: workflow:reviewer-lite
 model: haiku
 prompt: |
   ## Task
@@ -357,10 +294,10 @@ prompt: |
   Brief assessment (2-3 sentences max)
 ```
 
-### review (sonnet) - Built-in / reviewer (sonnet)
+### reviewer (sonnet)
 
 ```
-subagent_type: review
+subagent_type: workflow:reviewer
 prompt: |
   ## Task
   Review the implementation for: {task_description}
@@ -397,7 +334,7 @@ prompt: |
 ### reviewer-deep (opus)
 
 ```
-subagent_type: reviewer-deep
+subagent_type: workflow:reviewer-deep
 model: opus
 prompt: |
   ## Task
@@ -446,7 +383,7 @@ prompt: |
 ### security-lite (haiku)
 
 ```
-subagent_type: security-lite
+subagent_type: workflow:security-lite
 model: haiku
 prompt: |
   ## Task
@@ -472,10 +409,10 @@ prompt: |
   Brief assessment (1-2 sentences)
 ```
 
-### security-auditor (sonnet) - Built-in / security (sonnet)
+### security (sonnet)
 
 ```
-subagent_type: security-auditor
+subagent_type: workflow:security
 prompt: |
   ## Task
   Security audit for: {task_description}
@@ -508,7 +445,7 @@ prompt: |
 ### security-deep (opus)
 
 ```
-subagent_type: security-deep
+subagent_type: workflow:security-deep
 model: opus
 prompt: |
   ## Task
@@ -558,7 +495,7 @@ prompt: |
 ### test-writer (sonnet)
 
 ```
-subagent_type: test-writer
+subagent_type: workflow:test-writer
 prompt: |
   ## Task
   Write tests for: {task_description}
@@ -596,7 +533,7 @@ prompt: |
 ### perf-lite (haiku)
 
 ```
-subagent_type: perf-lite
+subagent_type: workflow:perf-lite
 model: haiku
 prompt: |
   ## Task
@@ -624,7 +561,7 @@ prompt: |
 ### perf-reviewer (sonnet)
 
 ```
-subagent_type: perf-reviewer
+subagent_type: workflow:perf-reviewer
 model: sonnet
 prompt: |
   ## Task
@@ -665,7 +602,7 @@ prompt: |
 ### doc-writer (haiku)
 
 ```
-subagent_type: doc-writer
+subagent_type: workflow:doc-writer
 model: haiku
 prompt: |
   ## Task
@@ -703,7 +640,7 @@ prompt: |
 ### explorer (haiku)
 
 ```
-subagent_type: explorer
+subagent_type: workflow:explorer
 model: haiku
 prompt: |
   ## Task

@@ -40,12 +40,12 @@
    - If PASS: Proceeds
 
 5. **Security Review Phase:**
-   - Supervisor spawns `security-auditor` agent
+   - Supervisor spawns `workflow:security` agent
    - Checks for XSS in theme switching, etc.
    - If issues: Loop back to implementation
 
 6. **Test Writing Phase:**
-   - Supervisor spawns `test-writer` agent
+   - Supervisor spawns `workflow:test-writer` agent
    - Creates tests for dark mode functionality
    - Verifies tests pass
 

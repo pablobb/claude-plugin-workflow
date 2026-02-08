@@ -78,7 +78,7 @@
 
 ** TODO Step 2: Code Review
 :PROPERTIES:
-:AGENT: review
+:AGENT: workflow:reviewer
 :STATUS: pending
 :STARTED_AT:
 :COMPLETED_AT:
@@ -105,7 +105,7 @@
 
 ** TODO Step 3: Test Writing
 :PROPERTIES:
-:AGENT: test-writer
+:AGENT: workflow:test-writer
 :STATUS: pending
 :STARTED_AT:
 :COMPLETED_AT:
@@ -124,7 +124,7 @@
 
 ** TODO Step 4: Completion
 :PROPERTIES:
-:AGENT: supervisor
+:AGENT: workflow:completion-guard
 :STATUS: pending
 :STARTED_AT:
 :COMPLETED_AT:

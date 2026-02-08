@@ -307,20 +307,20 @@ Use the correct agent based on the mode:
 
 | Phase | standard | turbo | eco | thorough | swarm |
 |-------|----------|-------|-----|----------|-------|
-| **Mode Detection** | task-analyzer | task-analyzer | task-analyzer | task-analyzer | task-analyzer |
-| **Codebase Analysis** | codebase-analyzer | codebase-analyzer | skip | codebase-analyzer | codebase-analyzer |
-| **Orchestration** | - | - | - | - | supervisor |
-| Planning | Plan | architect-lite | architect-lite | architect | architect (opus) |
-| **Decomposition** | - | - | - | - | supervisor |
+| **Mode Detection** | workflow:task-analyzer | workflow:task-analyzer | workflow:task-analyzer | workflow:task-analyzer | workflow:task-analyzer |
+| **Codebase Analysis** | workflow:codebase-analyzer | workflow:codebase-analyzer | skip | workflow:codebase-analyzer | workflow:codebase-analyzer |
+| **Orchestration** | - | - | - | - | workflow:supervisor |
+| Planning | Plan | workflow:architect-lite | workflow:architect-lite | workflow:architect | workflow:architect (opus) |
+| **Decomposition** | - | - | - | - | workflow:supervisor |
 | Implementation | workflow:executor | workflow:executor-lite | workflow:executor-lite | workflow:executor | workflow:executor ×4 (parallel) |
-| Code Review | reviewer | reviewer-lite | reviewer-lite | reviewer-deep | reviewer-deep ×3 |
-| Security | security | security-lite | security-lite | security-deep | security-deep (parallel) |
-| Quality Review | - | - | - | - | reviewer-deep (parallel) |
-| **Quality Gate** | quality-gate | quality-gate | quality-gate | quality-gate | quality-gate |
-| **Completion Guard** | completion-guard | completion-guard | completion-guard | completion-guard (opus) | completion-guard (opus) |
-| Testing | test-writer | - | - | test-writer | test-writer (parallel) |
-| Performance | - | - | - | perf-reviewer | perf-reviewer |
-| Documentation | - | - | - | doc-writer | doc-writer |
+| Code Review | workflow:reviewer | workflow:reviewer-lite | workflow:reviewer-lite | workflow:reviewer-deep | workflow:reviewer-deep ×3 |
+| Security | workflow:security | workflow:security-lite | workflow:security-lite | workflow:security-deep | workflow:security-deep (parallel) |
+| Quality Review | - | - | - | - | workflow:reviewer-deep (parallel) |
+| **Quality Gate** | workflow:quality-gate | workflow:quality-gate | workflow:quality-gate | workflow:quality-gate | workflow:quality-gate |
+| **Completion Guard** | workflow:completion-guard | workflow:completion-guard | workflow:completion-guard | workflow:completion-guard (opus) | workflow:completion-guard (opus) |
+| Testing | workflow:test-writer | - | - | workflow:test-writer | workflow:test-writer (parallel) |
+| Performance | - | - | - | workflow:perf-reviewer | workflow:perf-reviewer |
+| Documentation | - | - | - | workflow:doc-writer | workflow:doc-writer |
 
 ### Model Selection
 
@@ -433,23 +433,23 @@ Write the COMPLETE plan to the state file's Plan section. Include:
 1. **Turbo/Standard Reviews** - Code review + Security scan (no dependencies):
    ```
    # Send BOTH in a single message with multiple Task calls:
-   Task(subagent_type="reviewer-lite", prompt=..., run_in_background=true)
-   Task(subagent_type="security-lite", prompt=..., run_in_background=true)
+   Task(subagent_type="workflow:reviewer-lite", prompt=..., run_in_background=true)
+   Task(subagent_type="workflow:security-lite", prompt=..., run_in_background=true)
    # Then collect results from both
    ```
 
 2. **Thorough Mode Advisory Checks** - Performance + Documentation (after gates pass):
    ```
    # These are advisory, run in parallel:
-   Task(subagent_type="perf-reviewer", prompt=..., run_in_background=true)
-   Task(subagent_type="doc-writer", prompt=..., run_in_background=true)
+   Task(subagent_type="workflow:perf-reviewer", prompt=..., run_in_background=true)
+   Task(subagent_type="workflow:doc-writer", prompt=..., run_in_background=true)
    ```
 
 3. **Multi-file Implementation** - When plan has independent file changes:
    ```
    # If files are independent (e.g., new service + new test):
-   Task(subagent_type="executor-lite", prompt="Implement service...", run_in_background=true)
-   Task(subagent_type="executor-lite", prompt="Implement tests...", run_in_background=true)
+   Task(subagent_type="workflow:executor-lite", prompt="Implement service...", run_in_background=true)
+   Task(subagent_type="workflow:executor-lite", prompt="Implement tests...", run_in_background=true)
    ```
 
 #### When NOT to Parallelize
@@ -463,8 +463,8 @@ Write the COMPLETE plan to the state file's Plan section. Include:
 
 ```python
 # Launch parallel agents
-agent1 = Task(subagent_type="reviewer", run_in_background=true, ...)
-agent2 = Task(subagent_type="security", run_in_background=true, ...)
+agent1 = Task(subagent_type="workflow:reviewer", run_in_background=true, ...)
+agent2 = Task(subagent_type="workflow:security", run_in_background=true, ...)
 
 # Collect results (use TaskOutput or read output files)
 result1 = TaskOutput(task_id=agent1.id)

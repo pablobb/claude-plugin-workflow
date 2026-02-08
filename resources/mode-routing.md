@@ -17,10 +17,10 @@ This document explains how agents are selected based on execution mode.
 
 | Mode | Agent | Model | Behavior |
 |------|-------|-------|----------|
-| standard | codebase-analyzer | sonnet | Generate if missing or stale (>7 days) |
-| turbo | codebase-analyzer | sonnet | Use cache if available, else generate |
+| standard | workflow:codebase-analyzer | sonnet | Generate if missing or stale (>7 days) |
+| turbo | workflow:codebase-analyzer | sonnet | Use cache if available, else generate |
 | eco | SKIP | - | Use existing context only, never generate |
-| thorough | codebase-analyzer | sonnet | Always regenerate fresh |
+| thorough | workflow:codebase-analyzer | sonnet | Always regenerate fresh |
 
 Context file: `~/.claude/workflows/context/<project-slug>.md`
 
@@ -29,9 +29,9 @@ Context file: `~/.claude/workflows/context/<project-slug>.md`
 | Mode | Agent | Model | Depth |
 |------|-------|-------|-------|
 | standard | Plan (built-in) | sonnet | Full planning |
-| turbo | architect-lite | haiku | Quick analysis |
-| eco | architect-lite | haiku | Minimal planning |
-| thorough | architect | opus | Deep analysis |
+| turbo | workflow:architect-lite | haiku | Quick analysis |
+| eco | workflow:architect-lite | haiku | Minimal planning |
+| thorough | workflow:architect | opus | Deep analysis |
 
 ### Implementation Phase
 
@@ -46,28 +46,28 @@ Context file: `~/.claude/workflows/context/<project-slug>.md`
 
 | Mode | Agent | Model | Iterations | Blocking |
 |------|-------|-------|------------|----------|
-| standard | reviewer | sonnet | Max 2 | Yes |
-| turbo | reviewer-lite | haiku | 1 | No (advisory) |
-| eco | reviewer-lite | haiku | 1 | Yes |
-| thorough | reviewer-deep | opus | Max 3 | Yes |
+| standard | workflow:reviewer | sonnet | Max 2 | Yes |
+| turbo | workflow:reviewer-lite | haiku | 1 | No (advisory) |
+| eco | workflow:reviewer-lite | haiku | 1 | Yes |
+| thorough | workflow:reviewer-deep | opus | Max 3 | Yes |
 
 ### Security Review Phase
 
 | Mode | Agent | Model | Iterations | Blocking |
 |------|-------|-------|------------|----------|
-| standard | security | sonnet | Max 1 | Yes |
-| turbo | security-lite | haiku | 0 | No (advisory) |
-| eco | security-lite | haiku | 0 | No |
-| thorough | security-deep | opus | Max 2 | Yes |
+| standard | workflow:security | sonnet | Max 1 | Yes |
+| turbo | workflow:security-lite | haiku | 0 | No (advisory) |
+| eco | workflow:security-lite | haiku | 0 | No |
+| thorough | workflow:security-deep | opus | Max 2 | Yes |
 
 ### Test Phase
 
 | Mode | Agent | Model | Required | Coverage |
 |------|-------|-------|----------|----------|
-| standard | test-writer | sonnet | Optional | - |
+| standard | workflow:test-writer | sonnet | Optional | - |
 | turbo | - | - | No | - |
 | eco | - | - | No | - |
-| thorough | test-writer | sonnet | Yes | 80% min |
+| thorough | workflow:test-writer | sonnet | Yes | 80% min |
 
 ### Performance Review Phase
 
@@ -76,7 +76,7 @@ Context file: `~/.claude/workflows/context/<project-slug>.md`
 | standard | - | - | Skipped |
 | turbo | - | - | Skipped |
 | eco | - | - | Skipped |
-| thorough | perf-reviewer | sonnet | No (advisory) |
+| thorough | workflow:perf-reviewer | sonnet | No (advisory) |
 
 ### Documentation Phase
 
@@ -85,25 +85,25 @@ Context file: `~/.claude/workflows/context/<project-slug>.md`
 | standard | - | - | Skipped |
 | turbo | - | - | Skipped |
 | eco | - | - | Skipped |
-| thorough | doc-writer | haiku | No (advisory) |
+| thorough | workflow:doc-writer | haiku | No (advisory) |
 
 ### Quality Gate Phase (MANDATORY)
 
 | Mode | Agent | Model | Checks | Blocking |
 |------|-------|-------|--------|----------|
-| standard | quality-gate | sonnet | Full (build, type, lint, test, security) | **YES** |
-| turbo | quality-gate | haiku | Abbreviated (build, lint) | **YES** |
-| eco | quality-gate | haiku | Minimal (build, lint) | **YES** |
-| thorough | quality-gate | sonnet | Full + coverage check | **YES** |
+| standard | workflow:quality-gate | sonnet | Full (build, type, lint, test, security) | **YES** |
+| turbo | workflow:quality-gate | haiku | Abbreviated (build, lint) | **YES** |
+| eco | workflow:quality-gate | haiku | Minimal (build, lint) | **YES** |
+| thorough | workflow:quality-gate | sonnet | Full + coverage check | **YES** |
 
 ### Completion Guard Phase (MANDATORY)
 
 | Mode | Agent | Model | Verification | Blocking |
 |------|-------|-------|--------------|----------|
-| standard | completion-guard | sonnet | Requirements + Build + Tests + TODOs | **YES** |
-| turbo | completion-guard | haiku | Quick check (build + tests) | **YES** |
-| eco | completion-guard | haiku | Minimal (build + TODOs) | **YES** |
-| thorough | completion-guard | opus | Full verification (all checks) | **YES** |
+| standard | workflow:completion-guard | sonnet | Requirements + Build + Tests + TODOs | **YES** |
+| turbo | workflow:completion-guard | haiku | Quick check (build + tests) | **YES** |
+| eco | workflow:completion-guard | haiku | Minimal (build + TODOs) | **YES** |
+| thorough | workflow:completion-guard | opus | Full verification (all checks) | **YES** |
 
 ## Review Chain by Mode - MANDATORY GATES
 

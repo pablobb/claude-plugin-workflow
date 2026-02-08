@@ -76,7 +76,7 @@
 ---
 
 ### Step 2: Code Review
-**Agent:** review
+**Agent:** workflow:reviewer
 **Status:** pending
 **Iteration:** 0/2
 **Started:**
@@ -98,7 +98,7 @@
 ---
 
 ### Step 3: Quality Gate
-**Agent:** quality-gate
+**Agent:** workflow:quality-gate
 **Status:** pending
 **Started:**
 **Completed:**
@@ -112,7 +112,7 @@
 ---
 
 ### Step 4: Completion Guard
-**Agent:** completion-guard
+**Agent:** workflow:completion-guard
 **Status:** pending
 **Started:**
 **Completed:**
