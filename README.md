@@ -156,12 +156,55 @@ Or run `/workflow:setup` which will guide you through configuration.
 
 | Format | Extension | Use Case |
 |--------|-----------|----------|
-| `org` | `.org` (default) | Emacs org-mode, structured sections |
+| `org` | `.org` | Emacs org-mode, structured sections |
 | `md` | `.md` | Markdown, GitHub-friendly, easier to read |
 
-Use `--format=md` to create markdown state files:
+#### Format Selection
+
+**Format Priority (checked in order):**
+1. `--format=<format>` flag (overrides everything)
+2. Settings: `workflow.defaultFormat` (checked in: `.claude/settings.local.json` → `.claude/settings.json` → `~/.claude/settings.json`)
+3. Default: `org` (if neither flag nor settings are set)
+
+**Using the flag:**
 ```bash
 /workflow:start feature "Add user auth" --format=md
+```
+
+**Configuring default format in settings:**
+
+Add to your settings file (choose based on scope):
+
+**Project-local (`.claude/settings.local.json`):**
+```json
+{
+  "workflow": {
+    "defaultFormat": "md"
+  }
+}
+```
+
+**Project (`.claude/settings.json`):**
+```json
+{
+  "workflow": {
+    "defaultFormat": "md"
+  }
+}
+```
+
+**Global (`~/.claude/settings.json`):**
+```json
+{
+  "workflow": {
+    "defaultFormat": "org"
+  }
+}
+```
+
+After configuring, workflows will use your preferred format by default:
+```bash
+/workflow:start feature "Add user auth"  # Uses format from settings or "org" fallback
 ```
 
 ## Workflow State Files
@@ -671,10 +714,29 @@ If you're getting permission prompts for bash commands:
 
 ### Switching between org and markdown
 
-Both formats are fully supported. Use `--format=md` or `--format=org` when starting workflows:
+Both formats are fully supported. You can choose your format in three ways:
+
+**1. Use the flag (overrides settings):**
 ```bash
 /workflow:start feature "My task" --format=md
 ```
+
+**2. Configure default in settings:**
+Add to your settings file (see "State File Formats" section above):
+```json
+{
+  "workflow": {
+    "defaultFormat": "md"
+  }
+}
+```
+
+**3. Use default (org):**
+```bash
+/workflow:start feature "My task"  # Uses "org" if no flag or settings configured
+```
+
+**Format priority:** `--format` flag > settings (project-local > project > global) > "org" default
 
 ## Requirements
 

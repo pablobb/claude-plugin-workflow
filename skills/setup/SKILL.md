@@ -111,11 +111,15 @@ Report the status in a clear format:
 ### Settings Status
 - Global settings (~/.claude/settings.json): [found/not found]
 - Project settings (.claude/settings.json): [found/not found]
+- Project local settings (.claude/settings.local.json): [found/not found]
 
 ### Permission Check
 ✓ additionalDirectories includes ~/.claude/workflows
 ✗ additionalDirectories missing ~/.claude/plans
 ✗ additionalDirectories missing ~/.claude/skills
+
+### Workflow Configuration
+- Default format: [org/md from settings or "org" as default]
 
 ### Recommended Actions
 1. Add missing paths to additionalDirectories in ~/.claude/settings.json
@@ -172,6 +176,59 @@ set -x CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
 ```
 
 **Important**: Do NOT auto-modify shell profile files. Only show the command for the user to add manually. This env var is optional but enhances swarm mode when available.
+
+### Step 6c: Configure Workflow Default Format
+
+Check if workflow default format is configured in settings:
+
+```bash
+# Read settings files to check for workflow.defaultFormat
+cat ~/.claude/settings.json | grep -A 5 "workflow" || echo "No workflow config in global settings"
+cat .claude/settings.json 2>/dev/null | grep -A 5 "workflow" || echo "No workflow config in project settings"
+cat .claude/settings.local.json 2>/dev/null | grep -A 5 "workflow" || echo "No workflow config in project-local settings"
+```
+
+Show the format status in the report:
+
+```
+### Workflow Default Format
+⚠ No default format configured (will use "org" as fallback)
+  Options: org (Emacs), md (Markdown)
+  How to set: Add "workflow" section with "defaultFormat" to settings
+```
+
+If not configured, recommend adding it to the appropriate settings file:
+
+**For project-local settings (`.claude/settings.local.json`):**
+```json
+{
+  "workflow": {
+    "defaultFormat": "md"
+  }
+}
+```
+
+**For project settings (`.claude/settings.json`):**
+```json
+{
+  "workflow": {
+    "defaultFormat": "md"
+  }
+}
+```
+
+**For global settings (`~/.claude/settings.json`):**
+```json
+{
+  "workflow": {
+    "defaultFormat": "org"
+  }
+}
+```
+
+**Format priority:** `--format` flag > project-local > project > global > "org" default
+
+**Important:** Only add if the user wants to configure a default format. If they prefer the flag-based approach, no changes needed.
 
 ### Step 7: Verify Setup
 

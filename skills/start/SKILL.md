@@ -102,10 +102,15 @@ Swarm mode enables:
 
 | Format | Extension | Use Case |
 |--------|-----------|----------|
-| `org` | `.org` (default) | Emacs org-mode, structured sections, collapsible |
+| `org` | `.org` | Emacs org-mode, structured sections, collapsible |
 | `md` | `.md` | Markdown, GitHub-friendly, easier to read |
 
-**Note:** Both formats support the same features. Choose based on your editor preference.
+**Format Selection Priority:**
+1. `--format=<format>` flag (overrides everything)
+2. Settings: `workflow.defaultFormat` (checked in: `.claude/settings.local.json` → `.claude/settings.json` → `~/.claude/settings.json`)
+3. Default: `org` (if neither flag nor settings are set)
+
+**Note:** Both formats support the same features. Choose based on your editor preference. Configure default format in settings to avoid specifying `--format` every time.
 
 ## Examples
 ```
@@ -176,7 +181,14 @@ If directories cannot be created, **STOP** and inform the user to run `/workflow
    - First word = workflow type
    - Look for `--mode=<mode>` flag (if present, skip auto-detection)
    - Look for `--style=<style>` flag (default: `full`)
-   - Look for `--format=<format>` flag (default: `org`, options: `org`, `md`)
+   - **Determine format** (hierarchical check):
+     1. First, check `--format=<format>` flag (if provided, use it)
+     2. If no `--format` flag, check settings:
+        - Read `.claude/settings.local.json` (project-local, highest priority)
+        - Read `.claude/settings.json` (project-shared, medium priority)
+        - Read `~/.claude/settings.json` (global, lowest priority)
+        - Look for `workflow.defaultFormat` property (valid values: `org`, `md`)
+     3. If neither `--format` flag nor settings exist, use default: `org`
    - Rest = description
    - If type unknown, list available types and ask
 
